@@ -11,7 +11,9 @@
     "seed": "node server/seed.js",
     "test": "node test/engine.test.js",
     "build": "node build-static.js",
-    "preview": "node build-static.js && npx wrangler pages dev dist"
+    "preview": "node build-static.js && npx wrangler dev",
+    "deploy": "node build-static.js && npx wrangler deploy",
+    "deploy:pages": "node build-static.js && npx wrangler pages deploy dist"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

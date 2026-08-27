@@ -53,15 +53,25 @@ transpiler — the browser gets the same files that are on disk.
 
 ---
 
-## Deploying to Cloudflare Pages
+## Deploying to Cloudflare
 
-`npm run build` produces a static `dist/` (15 files, ~204 KB) that deploys to
-Pages, well inside its 20,000-file / 25 MiB-per-file limits.
+`npm run build` produces a static `dist/` (15 files, ~204 KB) — comfortably
+inside Cloudflare's 20,000-file / 25 MiB-per-file limits.
 
 ```bash
-npm run build
-npx wrangler pages deploy dist
+npm run deploy          # Workers (assets-only) — matches CI's `wrangler deploy`
+npm run deploy:pages    # Pages, if the project was created as a Pages project
+npm run preview         # build + serve locally on Cloudflare's own runtime
 ```
+
+`wrangler.toml` carries config for both: `[assets]` for `wrangler deploy` and
+`pages_build_output_dir` for `wrangler pages deploy`. Keep both — a config with
+only `pages_build_output_dir` makes `wrangler deploy` fail with *"Missing
+entry-point to Worker script or to assets directory"*, because it never reads
+that key. There is no `main`, which Wrangler permits for assets-only Workers.
+
+`dist/` is generated and gitignored, so **the build must run before deploying**.
+If CI runs `wrangler deploy` on its own, set the build command to `npm run build`.
 
 **The backend does not go with it.** Cloudflare Workers cannot run this server
 at any bundle size — the blockers are categorical, not size-related:

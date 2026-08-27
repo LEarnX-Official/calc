@@ -1,3 +1,23 @@
+# Static, assets-only deployment. There is no Worker script: `main` is omitted
+# deliberately, which Wrangler allows for assets-only Workers.
+#
+# The [assets] block is what `wrangler deploy` (Workers) reads. An earlier
+# config set only `pages_build_output_dir`, which `wrangler deploy` ignores —
+# producing "Missing entry-point to Worker script or to assets directory".
+# Both keys are present now so either deploy command works:
+#
+#   wrangler deploy            → Workers, reads [assets]
+#   wrangler pages deploy dist → Pages,   reads pages_build_output_dir
+#
+# Run `npm run build` first; dist/ is generated and not committed.
 name = "quotecraft"
 compatibility_date = "2026-08-27"
+
 pages_build_output_dir = "dist"
+
+[assets]
+directory = "./dist"
+# Serve dist/404.html for unmatched paths. Not "single-page-application" —
+# this is a multi-page static site, not an SPA, so a bad URL should 404
+# rather than silently render the landing page.
+not_found_handling = "404-page"

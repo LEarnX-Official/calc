@@ -1,1 +1,67 @@
 https://pricing.scrubtoscale.com/residential-pricing-system
+⛅️ wrangler 4.127.0
+19:29:18.306
+────────────────────
+19:29:18.828
+▲ [WARNING] It seems that you have run `wrangler deploy` on a Pages project, `wrangler pages deploy` should be used instead. Proceeding will likely produce unwanted results.
+19:29:18.828
+19:29:18.828
+19:29:18.830
+? Are you sure that you want to proceed?
+19:29:18.830
+🤖 Using fallback value in non-interactive context: yes
+19:29:18.843
+19:29:18.844
+Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+19:29:18.845
+19:29:18.850
+✘ [ERROR] Missing entry-point to Worker script or to assets directory
+19:29:18.851
+19:29:18.851
+
+19:29:18.852
+  If there is code to deploy, you can either:
+19:29:18.852
+  - Specify an entry-point to your Worker script via the command line (ex: `npx wrangler deploy src/index.ts`)
+19:29:18.852
+  - Or add the following to your "wrangler.toml" file:
+19:29:18.852
+
+19:29:18.852
+  ```
+19:29:18.852
+  main = "src/index.ts"
+19:29:18.852
+
+19:29:18.852
+  ```
+19:29:18.852
+
+19:29:18.853
+
+19:29:18.853
+  If are uploading a directory of assets, you can either:
+19:29:18.853
+  - Specify the path to the directory of assets via the command line: (ex: `npx wrangler deploy --assets=./dist`)
+19:29:18.853
+  - Or add the following to your "wrangler.toml" file:
+19:29:18.853
+
+19:29:18.853
+  ```
+19:29:18.853
+  [assets]
+19:29:18.853
+  directory = "./dist"
+19:29:18.853
+
+19:29:18.853
+  ```
+19:29:18.853
+
+19:29:18.853
+19:29:18.853
+19:29:18.870
+🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2026-08-27_17-29-17_498.log"
+19:29:18.997
+Failed: error occurred while running deploy command
