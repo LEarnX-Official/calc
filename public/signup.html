@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Create your account — QuoteCraft</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="/assets/theme.css"/>
+<style>
+  body { min-height: 100vh; display: grid; grid-template-columns: 1fr 460px; }
+  @media (max-width: 940px) { body { grid-template-columns: 1fr; } .aside { display: none; } }
+
+  /* ── left: the pitch ── */
+  .aside {
+    background: var(--ink-900); color: #fff; padding: 52px 48px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden;
+  }
+  .aside::before { content:''; position:absolute; top:-140px; left:-100px; width:420px; height:420px; border-radius:50%; background: radial-gradient(circle, rgba(92,79,135,.55), transparent 68%); }
+  .aside::after { content:''; position:absolute; bottom:-160px; right:-110px; width:380px; height:380px; border-radius:50%; background: radial-gradient(circle, rgba(242,166,90,.22), transparent 66%); }
+  .aside > * { position: relative; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -.02em; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 9px; background: rgba(255,255,255,.11); border: 1px solid rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center; color: var(--apricot-400); }
+  .brand-mark svg { width: 17px; height: 17px; }
+  .aside h2 { color: #fff; font-size: clamp(28px, 3vw, 38px); line-height: 1.15; margin-bottom: 16px; }
+  .aside h2 em { color: var(--apricot-400); font-style: italic; }
+  .aside .pitch p { color: rgba(255,255,255,.68); font-size: 15.5px; line-height: 1.7; max-width: 400px; }
+  .aside ul { list-style: none; margin-top: 28px; }
+  .aside li { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; font-size: 14.5px; color: rgba(255,255,255,.85); }
+  .aside li svg { width: 16px; height: 16px; color: var(--apricot-400); flex-shrink: 0; margin-top: 3px; }
+  .aside-foot { font-size: 13px; color: rgba(255,255,255,.42); }
+
+  /* ── right: the form ── */
+  .pane { display: flex; align-items: center; justify-content: center; padding: 40px 32px; background: var(--paper); }
+  .form-wrap { width: 100%; max-width: 380px; }
+  .form-wrap h1 { font-size: 30px; margin-bottom: 8px; }
+  .form-wrap .sub { font-size: 14.5px; color: var(--ink-600); margin-bottom: 28px; }
+  .mobile-brand { display: none; margin-bottom: 28px; }
+  @media (max-width: 940px) { .mobile-brand { display: flex; } .mobile-brand, .mobile-brand .brand { color: var(--ink-900); } .mobile-brand .brand-mark { background: linear-gradient(140deg, var(--violet-600), var(--ink-900)); border: 0; } }
+
+  .vert-pick { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 6px; }
+  .vert-opt { display: flex; align-items: center; gap: 12px; text-align: left; padding: 13px 14px; }
+  .vert-opt .c-icon { margin: 0; }
+  .vert-opt .c-icon svg { width: 19px; height: 19px; }
+  .vert-opt .c-name { font-size: 14px; }
+  .vert-opt .c-sub { margin-top: 1px; }
+
+  .err { background: var(--clay-100); border: 1px solid #EFCFC5; color: var(--clay-600); font-size: 13.5px; padding: 11px 14px; border-radius: var(--radius-xs); margin-bottom: 18px; display: none; line-height: 1.5; }
+  .err.show { display: block; }
+  .alt { text-align: center; font-size: 14px; color: var(--ink-500); margin-top: 22px; }
+</style>
+</head>
+<body>
+
+<div class="aside">
+  <a href="/" class="brand">
+    <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+    QuoteCraft
+  </a>
+  <div class="pitch">
+    <h2>Your website is about to start <em>quoting for you.</em></h2>
+    <p>Pick your trade and we'll load a working calculator with sensible prices already in it. Change the numbers to yours, copy one line of code, done.</p>
+    <ul>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Working calculator in about 10 minutes</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> No card needed while you set it up</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Works on any website builder</li>
+    </ul>
+  </div>
+  <p class="aside-foot">Already running it on your site? <a href="/login" style="color:var(--apricot-400)">Sign in</a></p>
+</div>
+
+<div class="pane">
+  <div class="form-wrap">
+    <div class="mobile-brand">
+      <a href="/" class="brand">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+        QuoteCraft
+      </a>
+    </div>
+
+    <h1>Create your account</h1>
+    <p class="sub">Free while you set it up. No card required.</p>
+
+    <div class="err" id="err"></div>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="businessName">Business name</label>
+        <input class="input" id="businessName" name="businessName" type="text" placeholder="Maple &amp; Moss Cleaning" autocomplete="organization" required/>
+        <p class="hint">This is what customers see on your calculator.</p>
+      </div>
+
+      <div class="field">
+        <label>What do you do?</label>
+        <div class="vert-pick" id="verts">
+          <div class="skeleton" style="height:58px"></div>
+          <div class="skeleton" style="height:58px"></div>
+          <div class="skeleton" style="height:58px"></div>
+        </div>
+        <p class="hint">Loads a starting price list for your trade — you can change every number later.</p>
+      </div>
+
+      <div class="field">
+        <label for="email">Work email</label>
+        <input class="input" id="email" name="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required/>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input class="input" id="password" name="password" type="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required/>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="submit">Create account</button>
+    </form>
+
+    <p class="alt">Already have an account? <a href="/login">Sign in</a></p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ICONS = {
+  sparkle: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/>',
+  leaf: '<path d="M4 20c0-8 6-14 16-14 0 10-6 15-13 15H4z"/><path d="M4 20c3-5 7-8 12-10"/>',
+  droplet: '<path d="M12 3s6 6.2 6 10.4A6 6 0 016 13.4C6 9.2 12 3 12 3z"/>',
+  beaker: '<path d="M9 3h6"/><path d="M10 3v6L5 19a2 2 0 001.8 3h10.4A2 2 0 0019 19l-5-10V3"/>',
+  box: '<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/>',
+  tool: '<path d="M14.7 6.3a4 4 0 01-5.4 5.4L4 17v3h3l5.3-5.3a4 4 0 015.4-5.4l-2.6 2.6-1.4-1.4z"/>'
+};
+const svg = n => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[n] || ICONS.sparkle) + '</svg>';
+
+const $ = s => document.querySelector(s);
+let chosen = null;
+
+function toast(msg, kind) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (kind || '');
+  setTimeout(() => { t.className = 'toast ' + (kind || ''); }, 3200);
+}
+
+function showErr(msg) {
+  const e = $('#err');
+  e.textContent = msg;
+  e.classList.add('show');
+  e.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+fetch('/api/verticals')
+  .then(r => r.json())
+  .then(d => {
+    const box = $('#verts');
+    box.innerHTML = '';
+    (d.verticals || []).forEach((v, i) => {
+      const el = document.createElement('div');
+      el.className = 'choice vert-opt' + (i === 0 ? ' active' : '');
+      el.innerHTML = '<span class="c-icon">' + svg(v.icon) + '</span>' +
+                     '<span><span class="c-name">' + v.name + '</span>' +
+                     '<span class="c-sub" style="display:block">' + (v.tagline || '') + '</span></span>';
+      el.onclick = () => {
+        box.querySelectorAll('.choice').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        chosen = v.id;
+      };
+      box.appendChild(el);
+      if (i === 0) chosen = v.id;
+    });
+  })
+  .catch(() => { $('#verts').innerHTML = '<p class="tiny muted">Could not load trades — you can pick one after signing up.</p>'; });
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('#err').classList.remove('show');
+
+  const body = {
+    businessName: $('#businessName').value.trim(),
+    email: $('#email').value.trim(),
+    password: $('#password').value,
+    vertical: chosen
+  };
+  if (!body.businessName) return showErr('Please enter your business name.');
+  if (!body.email) return showErr('Please enter your email address.');
+  if (body.password.length < 8) return showErr('Your password needs to be at least 8 characters.');
+
+  const btn = $('#submit');
+  btn.disabled = true;
+  btn.textContent = 'Creating your account…';
+
+  try {
+    const r = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+    location.href = '/app';
+  } catch (err) {
+    showErr(err.message);
+    btn.disabled = false;
+    btn.textContent = 'Create account';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "quotecraft",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Embeddable service-pricing calculators that turn website visitors into booked jobs.",
+  "main": "server/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "seed": "node server/seed.js",
+    "test": "node test/engine.test.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

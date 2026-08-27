@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dashboard — QuoteCraft</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="/assets/theme.css"/>
+<link rel="stylesheet" href="/app/dashboard.css"/>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ sidebar ══ -->
+  <aside class="side" id="side">
+    <a href="/" class="brand">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+      QuoteCraft
+    </a>
+
+    <nav class="side-nav">
+      <span class="side-label">Overview</span>
+      <a class="side-link active" data-view="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        Dashboard
+      </a>
+      <a class="side-link" data-view="leads">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg>
+        Leads <span class="side-count hidden" id="navLeadCount">0</span>
+      </a>
+
+      <span class="side-label">Your calculator</span>
+      <a class="side-link" data-view="pricing">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Pricing
+      </a>
+      <a class="side-link" data-view="services">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        Services &amp; add-ons
+      </a>
+      <a class="side-link" data-view="branding">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg>
+        Look &amp; wording
+      </a>
+      <a class="side-link" data-view="install">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l-6-6 6-6"/><path d="M15 6l6 6-6 6"/></svg>
+        Install
+      </a>
+
+      <span class="side-label">Account</span>
+      <a class="side-link" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.6 1.6 0 008 19.4a1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H2a2 2 0 110-4h.1A1.6 1.6 0 004.6 8a1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V2a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H22a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="side-foot">
+      <div class="who">
+        <span class="who-av" id="avatar">Q</span>
+        <span class="who-txt">
+          <b id="whoName">Loading…</b>
+          <small id="whoEmail"></small>
+        </span>
+      </div>
+      <button class="btn btn-ghost btn-sm btn-block" id="logout">Sign out</button>
+    </div>
+  </aside>
+  <div class="side-scrim" id="scrim"></div>
+
+  <!-- ══ main ══ -->
+  <main class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="grow">
+        <h2 id="pageTitle">Dashboard</h2>
+        <p class="page-sub" id="pageSub">How your calculator is doing</p>
+      </div>
+      <a class="btn btn-outline btn-sm" id="previewBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        Preview
+      </a>
+      <button class="btn btn-primary btn-sm hidden" id="saveBtn">Save changes</button>
+    </header>
+
+    <div class="body" id="body">
+      <div class="boot"><div class="spin"></div><p>Loading your account…</p></div>
+    </div>
+  </main>
+</div>
+
+<!-- ══ lead detail modal ══ -->
+<div class="overlay" id="leadOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="lmName">Lead</h3>
+        <p class="sub" id="lmWhen"></p>
+      </div>
+      <button class="modal-x" id="lmClose" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="lmBody"></div>
+    <div class="modal-foot">
+      <div class="grow"><span class="tiny muted" id="lmHook"></span></div>
+      <button class="btn btn-outline btn-sm" data-st="lost">Mark lost</button>
+      <button class="btn btn-outline btn-sm" data-st="contacted">Contacted</button>
+      <button class="btn btn-primary btn-sm" data-st="won">Mark won</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/shared/engine.js"></script>
+<script src="/app/dashboard.js"></script>
+</body>
+</html>

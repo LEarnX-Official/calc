@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Live demo — QuoteCraft</title>
+<meta name="description" content="A real QuoteCraft calculator, embedded exactly the way it would be on your own website."/>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="/assets/theme.css"/>
+<style>
+  .nav { position: sticky; top: 0; z-index: 60; background: rgba(251,248,243,.82); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .nav-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink-900); letter-spacing: -.02em; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(140deg, var(--violet-600), var(--ink-900)); display: flex; align-items: center; justify-content: center; color: var(--apricot-400); }
+  .brand-mark svg { width: 17px; height: 17px; }
+  .nav-links { display: flex; align-items: center; gap: 24px; }
+  .nav-links a { font-size: 14.5px; font-weight: 500; color: var(--ink-600); }
+  .nav-links a:hover { color: var(--violet-700); }
+
+  .head { text-align: center; padding: 54px 0 34px; }
+  .head h1 { margin: 14px 0 12px; }
+  .head p { font-size: 16.5px; color: var(--ink-600); max-width: 560px; margin: 0 auto; line-height: 1.65; }
+
+  .site-frame { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper-raised); box-shadow: var(--shadow-lg); overflow: hidden; margin-bottom: 40px; }
+  .site-bar { display: flex; align-items: center; gap: 7px; padding: 13px 18px; border-bottom: 1px solid var(--line); background: var(--paper-sunk); }
+  .site-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
+  .site-url { flex: 1; text-align: center; font-size: 12px; color: var(--ink-400); }
+  .site-body { padding: 8px 0 24px; }
+  .fake-hero { text-align: center; padding: 30px 24px 6px; border-bottom: 1px dashed var(--line); margin-bottom: 14px; }
+  .fake-hero .fh-brand { font-family: var(--serif); font-size: 22px; color: var(--ink-900); }
+  .fake-hero .fh-nav { font-size: 12.5px; color: var(--ink-400); margin-top: 8px; display: flex; gap: 20px; justify-content: center; padding-bottom: 22px; }
+
+  .note { background: var(--violet-050); border: 1px solid var(--violet-100); border-radius: var(--radius); padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start; margin-bottom: 40px; }
+  .note .icon-tile { flex-shrink: 0; }
+  .note h4 { font-size: 15.5px; margin-bottom: 5px; }
+  .note p { font-size: 14px; color: var(--ink-600); line-height: 1.65; }
+
+  .how { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 60px; align-items: start; }
+  @media (max-width: 820px) { .how { grid-template-columns: 1fr; } }
+  .how h3 { font-size: 19px; margin-bottom: 10px; }
+  .how p { font-size: 14.5px; color: var(--ink-600); line-height: 1.7; margin-bottom: 14px; }
+
+  .cta { text-align: center; padding: 20px 0 76px; }
+  .cta h2 { margin-bottom: 12px; }
+  .cta p { color: var(--ink-600); margin-bottom: 24px; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="container nav-in">
+  <a href="/" class="brand">
+    <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+    QuoteCraft
+  </a>
+  <div class="nav-links">
+    <a href="/#how">How it works</a>
+    <a href="/#pricing">Pricing</a>
+    <a href="/signup" class="btn btn-primary btn-sm">Start free</a>
+  </div>
+</div></nav>
+
+<div class="container">
+  <div class="head">
+    <span class="eyebrow">Live demo</span>
+    <h1>This is the real thing</h1>
+    <p>Below is a working QuoteCraft calculator embedded on a pretend cleaning company's website — the same one line of code you'd paste on yours. Change the answers and watch the price move.</p>
+  </div>
+
+  <div class="site-frame">
+    <div class="site-bar">
+      <span class="site-dot"></span><span class="site-dot"></span><span class="site-dot"></span>
+      <span class="site-url">mapleandmoss.com/pricing</span>
+    </div>
+    <div class="site-body">
+      <div class="fake-hero">
+        <div class="fh-brand">Maple &amp; Moss Cleaning</div>
+        <div class="fh-nav"><span>Services</span><span>About</span><span>Pricing</span><span>Contact</span></div>
+      </div>
+      <!-- ↓ this is the entire integration ↓ -->
+      <script src="/embed.js" data-quotecraft="maple-moss-cleaning"></script>
+    </div>
+  </div>
+
+  <div class="note">
+    <span class="icon-tile apricot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg></span>
+    <div>
+      <h4>Go ahead and submit it</h4>
+      <p>This demo is wired to a real account. If you fill in the details and send the quote, it lands in the demo dashboard just like a real lead would — sign in with <b>demo@quotecraft.app</b> / <b>demo1234</b> to see it arrive.</p>
+    </div>
+  </div>
+
+  <div class="how">
+    <div class="card">
+      <div class="card-head plain"><div><h3>What you paste</h3><p class="sub">One tag, anywhere in your page</p></div></div>
+      <div class="code"><span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://app.quotecraft.io/embed.js"</span> <span class="attr">data-quotecraft</span>=<span class="str">"your-slug"</span><span class="tag">&gt;&lt;/script&gt;</span></div>
+      <p style="margin-top:14px;font-size:13.5px;color:var(--ink-600);line-height:1.65">Drop it where you want the calculator to appear. It loads in its own frame and resizes itself to fit, so your theme's CSS can't break it and its CSS can't break your theme.</p>
+    </div>
+    <div>
+      <h3>What happens after</h3>
+      <p>Every visitor who reaches a price is asked for their name and contact details. That becomes a lead in your dashboard with the full quote attached — the size they picked, the service, the add-ons, the total.</p>
+      <p>Add a webhook URL and the same lead is pushed to Zapier, Make, HighLevel or your own endpoint within seconds, so it can start an automation before they've closed the tab.</p>
+      <p>Prices are recalculated on our server before anything is saved, so nobody can fiddle with the page and book a $2,000 job for $9.</p>
+      <a href="/signup" class="btn btn-outline">Set up your own</a>
+    </div>
+  </div>
+
+  <div class="cta">
+    <h2>Ready to put this on your site?</h2>
+    <p>Pick your trade, adjust your rates, copy the tag.</p>
+    <a href="/signup" class="btn btn-accent btn-lg">Build your calculator — free</a>
+  </div>
+</div>
+
+</body>
+</html>

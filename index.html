@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Residential Cleaning Pricing Calculator</title>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --red:#c62828;--red-light:#fdeeee;--red-mid:#e04a4a;--red-dark:#7f1717;--red-deep:#5a0e0e;
+  --shell:#fdf8f8;--warm-white:#ffffff;--ink:#231a1a;--ink-mid:#584c4c;--ink-light:#9c8888;
+  --border:#f2dede;--accent:#8c6b6b;--accent-light:#f7eeee;
+  --radius:14px;--radius-sm:8px;
+}
+
+body{font-family:'Outfit',sans-serif;background:var(--shell);color:var(--ink);min-height:100vh;padding:48px 20px 80px}
+.wrap{max-width:1020px;margin:0 auto}
+
+/* ── HEADER ── */
+.page-header{text-align:center;margin-bottom:32px}
+.page-header .badge{display:inline-block;background:var(--red-light);color:var(--red);font-size:10.5px;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:14px;border:1px solid var(--border)}
+.page-header h1{font-family:'Playfair Display',serif;font-size:clamp(26px,4.5vw,44px);line-height:1.2;margin-bottom:10px}
+.page-header h1 em{color:var(--red);font-style:italic}
+.page-header p{font-size:15px;color:var(--ink-mid);max-width:480px;margin:0 auto;line-height:1.65}
+
+/* ── CUSTOMIZER ── */
+.customizer-wrap{margin-bottom:28px}
+.customizer-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--warm-white);border:1.5px solid var(--border);border-radius:var(--radius);cursor:pointer;user-select:none;transition:border-color .18s;box-shadow:0 2px 8px rgba(198,40,40,.05)}
+.customizer-toggle:hover{border-color:var(--red-mid)}
+.customizer-toggle.open{border-color:var(--red);border-radius:var(--radius) var(--radius) 0 0;border-bottom-color:transparent}
+.ct-left{display:flex;align-items:center;gap:12px}
+.ct-icon{width:34px;height:34px;background:var(--red-light);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.ct-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600}
+.ct-sub{font-size:11.5px;color:var(--ink-light);margin-top:1px}
+.ct-arrow{font-size:13px;color:var(--ink-light);transition:transform .22s}
+.customizer-toggle.open .ct-arrow{transform:rotate(180deg)}
+.customizer-body{display:none;background:var(--warm-white);border:1.5px solid var(--red);border-top:none;border-radius:0 0 var(--radius) var(--radius);padding:24px}
+.customizer-body.open{display:block}
+
+.factor-row{display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+.factor-label-col{min-width:130px}
+.factor-label-col .fl-title{font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-light);margin-bottom:3px}
+.factor-label-col .fl-sub{font-size:11px;color:var(--ink-light)}
+.slider-track{flex:1;min-width:180px}
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:10px;background:var(--border);outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--red);border:3px solid white;box-shadow:0 2px 8px rgba(198,40,40,.4);cursor:pointer;transition:transform .15s}
+input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--red);border:3px solid white;cursor:pointer}
+.slider-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-light);margin-top:4px}
+.factor-badge{min-width:72px;padding:8px 14px;background:var(--red-light);border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:18px;font-weight:700;color:var(--red-dark);font-family:'Playfair Display',serif;transition:background .2s}
+.factor-badge.above{background:#fde7e7;border-color:#f0b4b4;color:#a01818}
+.factor-badge.below{background:#f6f0f0;border-color:#e0cfcf;color:#6b5555}
+
+.sec-divider{display:flex;align-items:center;gap:10px;margin:4px 0 18px}
+.sec-divider::before,.sec-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-divider span{font-size:10.5px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);white-space:nowrap}
+
+.disc-grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:700px){.disc-grid-5{grid-template-columns:1fr 1fr}}
+.disc-field{display:flex;flex-direction:column;gap:6px}
+.disc-field label{font-size:11.5px;font-weight:600;letter-spacing:.4px;color:var(--ink-light);text-transform:uppercase}
+.disc-input-wrap{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:var(--warm-white);transition:border-color .18s,box-shadow .18s}
+.disc-input-wrap:focus-within{border-color:var(--red-mid);box-shadow:0 0 0 3px rgba(224,74,74,.13)}
+.disc-input-wrap .pre{padding-left:11px;font-size:14px;color:var(--ink-light);font-weight:600}
+.disc-input-wrap input{flex:1;border:none;padding:10px 12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;color:var(--ink);background:transparent;outline:none;width:0;-moz-appearance:textfield}
+.disc-input-wrap input::-webkit-outer-spin-button,.disc-input-wrap input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.disc-input-wrap .unit{padding-right:11px;font-size:11px;color:var(--ink-light);white-space:nowrap}
+.disc-note{font-size:10.5px;color:var(--ink-light);line-height:1.4}
+
+.reset-row{display:flex;justify-content:flex-end;margin-top:20px}
+.btn-ghost{background:transparent;border:1.5px solid var(--border);color:var(--ink-mid);padding:8px 16px;border-radius:var(--radius-sm);font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .16s}
+.btn-ghost:hover{border-color:var(--red-mid);color:var(--red)}
+
+/* ── LAYOUT ── */
+.two-col{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+@media(max-width:780px){.two-col{grid-template-columns:1fr}.results-panel{position:static!important}}
+
+.card{background:var(--warm-white);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(198,40,40,.06)}
+.card:last-child{margin-bottom:0}
+.card-title{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.card-title .icon{width:34px;height:34px;background:var(--red-light);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-title h2{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;line-height:1.25}
+.card-title .sub{font-size:11.5px;color:var(--ink-light);margin-top:1px}
+.card-title h2 .qual{font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;color:var(--red);letter-spacing:.3px}
+
+/* ── STEPPERS ── */
+.stepper-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.stepper-row:last-of-type{border-bottom:none}
+.stepper-row .lbl{font-size:14px;font-weight:500}
+.stepper{display:flex;align-items:center;gap:4px;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:3px;background:var(--warm-white)}
+.stepper button{width:30px;height:30px;border:none;border-radius:6px;background:var(--red-light);color:var(--red-dark);font-size:16px;font-weight:600;cursor:pointer;line-height:1;transition:background .14s}
+.stepper button:hover{background:var(--red);color:#fff}
+.stepper button:disabled{opacity:.35;cursor:not-allowed;background:var(--red-light);color:var(--red-dark)}
+.stepper .val{min-width:34px;text-align:center;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+
+.field-block{margin-top:18px}
+.field-block label,.dfl{display:block;font-size:11.5px;font-weight:600;letter-spacing:.4px;color:var(--ink-light);text-transform:uppercase;margin-bottom:7px}
+select,.text-input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;font-family:'Outfit',sans-serif;font-size:14.5px;color:var(--ink);background:var(--warm-white);outline:none;transition:border-color .18s,box-shadow .18s}
+select:focus,.text-input:focus{border-color:var(--red-mid);box-shadow:0 0 0 3px rgba(224,74,74,.13)}
+
+/* ── SERVICE TYPE ── */
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:520px){.type-grid{grid-template-columns:1fr}}
+.type-opt{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px 12px;text-align:center;cursor:pointer;transition:all .16s;background:var(--warm-white)}
+.type-opt:hover{border-color:var(--red-mid);transform:translateY(-1px)}
+.type-opt.active{border-color:var(--red);background:var(--red-light);box-shadow:0 3px 12px rgba(198,40,40,.14)}
+.type-opt .t-icon{font-size:22px;margin-bottom:7px}
+.type-opt .t-name{font-size:13.5px;font-weight:600;margin-bottom:3px}
+.type-opt .t-sub{font-size:10.5px;color:var(--ink-light);line-height:1.35}
+
+.tip{display:flex;gap:10px;background:var(--accent-light);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:var(--radius-sm);padding:12px 14px;margin-top:16px}
+.tip .t-ico{font-size:14px;flex-shrink:0}
+.tip p{font-size:12px;color:var(--ink-mid);line-height:1.55}
+.link-btn{display:inline-block;margin-top:14px;background:none;border:none;color:var(--red);font-family:'Outfit',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;padding:0;border-bottom:1px solid transparent;transition:border-color .15s}
+.link-btn:hover{border-bottom-color:var(--red)}
+
+/* ── FREQUENCY ── */
+.freq-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:640px){.freq-grid{grid-template-columns:1fr 1fr}}
+.freq-opt{border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;cursor:pointer;transition:all .16s;background:var(--warm-white)}
+.freq-opt:hover{border-color:var(--red-mid)}
+.freq-opt.active{border-color:var(--red);background:var(--red-light)}
+.freq-opt.disabled{opacity:.4;pointer-events:none}
+.freq-opt .f-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.freq-opt .f-disc{font-size:11px;color:var(--red);font-weight:600}
+.freq-opt.active .f-disc{color:var(--red-dark)}
+.lock-note{font-size:11.5px;color:var(--ink-light);margin-top:14px;display:flex;gap:6px;align-items:center}
+
+/* ── ADD-ONS ── */
+.addon-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+.addon-list{display:flex;flex-direction:column;gap:2px}
+.addon-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:var(--radius-sm);transition:background .14s;cursor:pointer}
+.addon-row:hover{background:var(--red-light)}
+.addon-row.checked{background:var(--red-light)}
+.cbox{width:19px;height:19px;border:1.5px solid var(--border);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--warm-white);font-size:12px;color:transparent;transition:all .15s}
+.addon-row.checked .cbox,.opt-row.checked .cbox{background:var(--red);border-color:var(--red);color:#fff}
+.addon-row .a-name{flex:1;font-size:14px}
+.addon-row .a-price{font-size:14px;font-weight:600;color:var(--ink-mid);font-variant-numeric:tabular-nums}
+.qty-mini{display:flex;align-items:center;gap:2px;border:1.5px solid var(--border);border-radius:6px;padding:2px;background:#fff}
+.qty-mini button{width:22px;height:22px;border:none;border-radius:4px;background:var(--red-light);color:var(--red-dark);font-size:13px;font-weight:600;cursor:pointer;line-height:1}
+.qty-mini button:hover{background:var(--red);color:#fff}
+.qty-mini .q{min-width:20px;text-align:center;font-size:12.5px;font-weight:600}
+
+/* ── RESULTS PANEL ── */
+.results-panel{background:linear-gradient(160deg,var(--red-dark) 0%,var(--red-deep) 100%);border-radius:var(--radius);padding:28px 24px;color:white;position:sticky;top:24px;box-shadow:0 12px 40px rgba(122,20,20,.32)}
+.rp-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
+.rp-price{font-family:'Playfair Display',serif;font-size:50px;line-height:1;color:white;margin-bottom:2px;transition:opacity .12s}
+.rp-price.flash{opacity:.35}
+.rp-min-note,.rp-factor-note{font-size:11px;color:#ffc9c9;margin-top:6px;display:none}
+.rp-min-note.visible,.rp-factor-note.visible{display:block}
+.rp-type-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);padding:5px 11px;border-radius:20px;font-size:11.5px;margin-top:12px}
+.rp-custom{display:none;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius-sm);padding:12px;font-size:12px;line-height:1.5;margin-top:14px}
+
+.rp-sec{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.15)}
+.rp-sec-title{font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:11px}
+.rp-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:5px 0;font-size:12.5px;color:rgba(255,255,255,.82)}
+.rp-line .v{font-weight:600;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rp-line.discount .v{color:#ffb3b3}
+.rp-line.total{margin-top:9px;padding-top:11px;border-top:1px solid rgba(255,255,255,.15);font-size:14px;color:#fff}
+.rp-line.total .v{font-family:'Playfair Display',serif;font-size:19px}
+.time-box{background:rgba(255,255,255,.09);border-radius:var(--radius-sm);padding:14px;margin-top:20px;text-align:center}
+.time-box .tb-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
+.time-box .tb-val{font-family:'Playfair Display',serif;font-size:26px;color:#fff}
+.time-box .tb-sub{font-size:10.5px;color:rgba(255,255,255,.55);margin-top:3px}
+.rp-reset{width:100%;margin-top:18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:10px;border-radius:var(--radius-sm);font-family:'Outfit',sans-serif;font-size:12.5px;cursor:pointer;transition:background .15s}
+.rp-reset:hover{background:rgba(255,255,255,.2)}
+
+/* ── SETTINGS / QUOTE ── */
+.section-head{text-align:center;margin:44px 0 22px}
+.section-head h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:6px}
+.section-head p{font-size:13.5px;color:var(--ink-mid)}
+
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:none;border-radius:var(--radius-sm);padding:11px 20px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .16s}
+.btn-primary{background:var(--red);color:#fff;box-shadow:0 3px 12px rgba(198,40,40,.28)}
+.btn-primary:hover{background:var(--red-dark)}
+.btn-outline{background:var(--warm-white);color:var(--ink-mid);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--red-mid);color:var(--red)}
+.note-list{margin-top:16px;display:flex;flex-direction:column;gap:7px}
+.note-list p{font-size:11.5px;color:var(--ink-light);line-height:1.5}
+.note-list b{color:var(--ink-mid);font-weight:600}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+.opt-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:background .14s}
+.opt-row:hover{background:var(--red-light)}
+.opt-row span{font-size:13.5px}
+
+/* ── QUOTE PREVIEW ── */
+.quote-doc{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:36px;box-shadow:0 4px 20px rgba(198,40,40,.08)}
+.qd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding-bottom:22px;border-bottom:2px solid var(--red)}
+.qd-biz{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--red-dark)}
+.qd-tag{font-size:12px;color:var(--ink-light);margin-top:2px}
+.qd-contact{font-size:11.5px;color:var(--ink-mid);margin-top:8px;line-height:1.6}
+.qd-label{font-family:'Playfair Display',serif;font-size:26px;letter-spacing:5px;color:var(--red);text-align:right}
+.qd-for{font-size:12px;color:var(--ink-light);text-align:right;margin-top:6px}
+.qd-for b{color:var(--ink);font-weight:600;font-size:14px;display:block;margin-top:2px}
+.qd-table{width:100%;border-collapse:collapse;margin-top:22px}
+.qd-table th{text-align:left;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);padding:8px 0;border-bottom:1px solid var(--border);font-weight:600}
+.qd-table th:last-child,.qd-table td:last-child{text-align:right}
+.qd-table td{padding:11px 0;font-size:13.5px;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums}
+.qd-total{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding:16px 18px;background:var(--red-light);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.qd-total .lbl{font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--red-dark);font-weight:600}
+.qd-total .amt{font-family:'Playfair Display',serif;font-size:27px;color:var(--red-dark)}
+.qd-sub{margin-top:22px}
+.qd-sub h4{font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);margin-bottom:9px}
+.qd-sub .row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:var(--ink-mid)}
+.qd-sub .row b{color:var(--ink);font-weight:600}
+.qd-notes{margin-top:22px;font-size:11.5px;color:var(--ink-light);line-height:1.6}
+.qd-foot{margin-top:26px;padding-top:16px;border-top:1px solid var(--border);text-align:center;font-size:10.5px;color:var(--ink-light);letter-spacing:.6px}
+
+/* ── MODALS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(35,26,26,.55);z-index:100;padding:24px;overflow-y:auto}
+.overlay.open{display:flex;align-items:flex-start;justify-content:center}
+.modal{background:#fff;border-radius:var(--radius);width:100%;max-width:560px;margin:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:22px 24px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-family:'Playfair Display',serif;font-size:18px}
+.modal-head p{font-size:11.5px;color:var(--ink-light);margin-top:2px}
+.modal-x{background:none;border:none;font-size:17px;color:var(--ink-light);cursor:pointer;line-height:1;padding:2px 4px}
+.modal-x:hover{color:var(--red)}
+.modal-body{padding:22px 24px;max-height:64vh;overflow-y:auto}
+.mgr-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border)}
+.mgr-row input.n{flex:1;border:1.5px solid transparent;border-radius:6px;padding:7px 8px;font-family:'Outfit',sans-serif;font-size:13.5px;color:var(--ink);background:transparent;outline:none}
+.mgr-row input.n:focus{border-color:var(--red-mid);background:#fff}
+.mgr-price{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;width:86px}
+.mgr-price span{padding-left:8px;font-size:12.5px;color:var(--ink-light)}
+.mgr-price input{width:100%;border:none;padding:7px 8px;font-family:'Outfit',sans-serif;font-size:13.5px;font-weight:600;outline:none;-moz-appearance:textfield}
+.mgr-price input::-webkit-outer-spin-button,.mgr-price input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mgr-del{background:none;border:none;color:var(--ink-light);font-size:14px;cursor:pointer;padding:4px 6px}
+.mgr-del:hover{color:var(--red)}
+.mgr-add{display:flex;gap:9px;margin-top:18px;padding-top:18px;border-top:1px dashed var(--border)}
+.mgr-add .text-input{flex:1}
+
+.chk-group{margin-bottom:22px}
+.chk-group h4{font-family:'Playfair Display',serif;font-size:15px;margin-bottom:10px;color:var(--red-dark)}
+.chk-item{display:flex;align-items:flex-start;gap:9px;padding:6px 0;font-size:13px;color:var(--ink-mid);line-height:1.45}
+.chk-item .mark{color:var(--red);font-size:12px;flex-shrink:0;margin-top:2px;width:14px}
+.chk-item.off{opacity:.34;text-decoration:line-through}
+.chk-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chk-legend button{border:1.5px solid var(--border);background:#fff;border-radius:20px;padding:6px 14px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s}
+.chk-legend button.active{background:var(--red);border-color:var(--red);color:#fff}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,80px);background:var(--red-dark);color:#fff;padding:12px 22px;border-radius:var(--radius-sm);font-size:13.5px;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:all .25s;z-index:200}
+.toast.show{transform:translate(-50%,0);opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-header">
+    <div class="badge">Residential Cleaning</div>
+    <h1>Residential <em>Pricing Calculator</em></h1>
+    <p>Generate consistent, margin-driven residential cleaning quotes built on your exact pricing model.</p>
+  </header>
+
+  <!-- CUSTOMIZER -->
+  <div class="customizer-wrap">
+    <div class="customizer-toggle" id="custToggle">
+      <div class="ct-left">
+        <div class="ct-icon">⚙️</div>
+        <div>
+          <div class="ct-title">Pricing Customizer</div>
+          <div class="ct-sub">Adjust hourly rate, price factor &amp; frequency discounts</div>
+        </div>
+      </div>
+      <div class="ct-arrow">▼</div>
+    </div>
+    <div class="customizer-body" id="custBody">
+
+      <div class="factor-row">
+        <div class="factor-label-col">
+          <div class="fl-title">Price Factor</div>
+          <div class="fl-sub">Scales all prices &amp; job times</div>
+        </div>
+        <div class="slider-track">
+          <input type="range" id="sFactor" min="50" max="150" value="100" step="1"/>
+          <div class="slider-labels"><span>−50%</span><span>Default (1×)</span><span>+50%</span></div>
+        </div>
+        <div class="factor-badge" id="bFactor">1.00×</div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-label-col">
+          <div class="fl-title">🔬 Deep Clean</div>
+          <div class="fl-sub">Multiplier vs standard</div>
+        </div>
+        <div class="slider-track">
+          <input type="range" id="sDeep" min="100" max="200" value="150" step="5"/>
+          <div class="slider-labels"><span>1.00×</span><span>Default (1.50×)</span><span>2.00×</span></div>
+        </div>
+        <div class="factor-badge" id="bDeep">1.50×</div>
+      </div>
+
+      <div class="factor-row">
+        <div class="factor-label-col">
+          <div class="fl-title">📦 Move-In/Out</div>
+          <div class="fl-sub">Multiplier vs standard</div>
+        </div>
+        <div class="slider-track">
+          <input type="range" id="sMove" min="100" max="300" value="200" step="5"/>
+          <div class="slider-labels"><span>1.00×</span><span>Default (2.00×)</span><span>3.00×</span></div>
+        </div>
+        <div class="factor-badge" id="bMove">2.00×</div>
+      </div>
+
+      <div class="sec-divider"><span>Hourly Rate &amp; Frequency Discounts</span></div>
+
+      <div class="disc-grid-5">
+        <div class="disc-field">
+          <label>Hourly Rate</label>
+          <div class="disc-input-wrap"><span class="pre">$</span><input type="number" id="iRate" value="60" min="1" max="999" step="1"/><span class="unit">/ hr</span></div>
+          <div class="disc-note">Affects sqft, bedroom &amp; bath prices</div>
+        </div>
+        <div class="disc-field">
+          <label>Weekly Discount</label>
+          <div class="disc-input-wrap"><input type="number" id="iWeekly" value="35" min="0" max="99" step="1"/><span class="unit">% off</span></div>
+          <div class="disc-note" id="nWeekly">Multiplier: 0.65×</div>
+        </div>
+        <div class="disc-field">
+          <label>Every 2 Weeks</label>
+          <div class="disc-input-wrap"><input type="number" id="iBiweekly" value="30" min="0" max="99" step="1"/><span class="unit">% off</span></div>
+          <div class="disc-note" id="nBiweekly">Multiplier: 0.70×</div>
+        </div>
+        <div class="disc-field">
+          <label>Every 4 Weeks</label>
+          <div class="disc-input-wrap"><input type="number" id="iMonthly" value="20" min="0" max="99" step="1"/><span class="unit">% off</span></div>
+          <div class="disc-note" id="nMonthly">Multiplier: 0.80×</div>
+        </div>
+        <div class="disc-field">
+          <label>Minimum Price</label>
+          <div class="disc-input-wrap"><span class="pre">$</span><input type="number" id="iMin" value="125" min="0" max="9999" step="1"/></div>
+          <div class="disc-note">Applied to service total (before add-ons).</div>
+        </div>
+      </div>
+
+      <div class="reset-row"><button class="btn-ghost" id="btnResetCust">↺ Reset to Defaults</button></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="two-col">
+    <div class="left-col">
+
+      <div class="card">
+        <div class="card-title">
+          <div class="icon">🏠</div>
+          <div><h2>Property Details</h2><div class="sub">Select property specifications.</div></div>
+        </div>
+        <div class="stepper-row">
+          <div class="lbl">Bedrooms</div>
+          <div class="stepper"><button data-step="bedrooms" data-dir="-1">−</button><div class="val" id="vBed">3</div><button data-step="bedrooms" data-dir="1">+</button></div>
+        </div>
+        <div class="stepper-row">
+          <div class="lbl">Full Bathrooms</div>
+          <div class="stepper"><button data-step="fullBaths" data-dir="-1">−</button><div class="val" id="vFull">2</div><button data-step="fullBaths" data-dir="1">+</button></div>
+        </div>
+        <div class="stepper-row">
+          <div class="lbl">Half Bathrooms</div>
+          <div class="stepper"><button data-step="halfBaths" data-dir="-1">−</button><div class="val" id="vHalf">0</div><button data-step="halfBaths" data-dir="1">+</button></div>
+        </div>
+        <div class="field-block">
+          <label>Square Footage</label>
+          <select id="selSqft"></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="icon">🧹</div>
+          <div><h2>Cleaning Service Type</h2><div class="sub">Choose service type.</div></div>
+        </div>
+        <div class="type-grid">
+          <div class="type-opt" data-type="standard"><div class="t-icon">✨</div><div class="t-name">Standard Clean</div><div class="t-sub">Regular maintenance</div></div>
+          <div class="type-opt" data-type="deep"><div class="t-icon">🔬</div><div class="t-name">Deep Clean</div><div class="t-sub">Thorough top-to-bottom</div></div>
+          <div class="type-opt" data-type="moveout"><div class="t-icon">📦</div><div class="t-name">Move-In/Out</div><div class="t-sub">Vacant property</div></div>
+        </div>
+        <div class="tip">
+          <div class="t-ico">💡</div>
+          <p>We recommend giving a price range to clients for Deep Cleans and Move-In/Out cleans as a buffer for tasks that require more time than anticipated.</p>
+        </div>
+        <button class="link-btn" id="btnChecklist">📋 View service checklist</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <div class="icon">📅</div>
+          <div><h2>Recurring Frequency <span class="qual">(Standard Cleans Only)</span></h2><div class="sub">Set recurring schedule.</div></div>
+        </div>
+        <div class="freq-grid">
+          <div class="freq-opt" data-freq="weekly"><div class="f-name">Weekly</div><div class="f-disc" id="fdWeekly">−35%</div></div>
+          <div class="freq-opt" data-freq="biweekly"><div class="f-name">Every 2 Wks</div><div class="f-disc" id="fdBiweekly">−30%</div></div>
+          <div class="freq-opt" data-freq="monthly"><div class="f-name">Every 4 Wks</div><div class="f-disc" id="fdMonthly">−20%</div></div>
+          <div class="freq-opt" data-freq="onetime"><div class="f-name">One-Time</div><div class="f-disc">No discount</div></div>
+        </div>
+        <div class="lock-note" id="lockNote">🔒 Deep Clean and Move-In/Out are one-time services only</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:0">
+          <div class="icon">➕</div>
+          <div><h2>Add-On Services</h2><div class="sub">Check to add · prices are editable</div></div>
+        </div>
+        <div class="addon-head" style="margin-top:16px">
+          <div style="font-size:11.5px;color:var(--ink-light)">The estimated price is based on the service checklist, with selected add-ons included.</div>
+          <button class="btn-ghost" id="btnManage" style="white-space:nowrap">✏️ Manage</button>
+        </div>
+        <div class="addon-list" id="addonList"></div>
+      </div>
+
+    </div>
+
+    <!-- RESULTS -->
+    <aside>
+      <div class="results-panel">
+        <div class="rp-eyebrow">Estimated Quote</div>
+        <div class="rp-price" id="rpPrice">$0.00</div>
+        <div class="rp-min-note" id="rpMinNote">⬆ Minimum price applied</div>
+        <div class="rp-factor-note" id="rpFactorNote">⚙ Price adjusted</div>
+        <div class="rp-type-badge" id="rpBadge">✨ Standard · Every 2 Wks</div>
+        <div class="rp-custom" id="rpCustom">✦ This property requires a custom quote. Please contact us directly for an on-site assessment.</div>
+
+        <div class="rp-sec" id="breakdownSection">
+          <div class="rp-sec-title">Price Breakdown</div>
+          <div class="rp-line"><span>Square footage base</span><span class="v" id="bSqft">—</span></div>
+          <div class="rp-line"><span>Bedrooms (<span id="bBedN">3</span>)</span><span class="v" id="bBed">—</span></div>
+          <div class="rp-line"><span>Full bathrooms (<span id="bFullN">2</span>)</span><span class="v" id="bFull">—</span></div>
+          <div class="rp-line"><span>Half bathrooms (<span id="bHalfN">0</span>)</span><span class="v" id="bHalf">—</span></div>
+          <div class="rp-line"><span>Add-ons</span><span class="v" id="bExtras">—</span></div>
+          <div class="rp-line discount"><span>Frequency discount</span><span class="v" id="bDisc">—</span></div>
+          <div class="rp-line total"><span>Total</span><span class="v" id="bTotal">—</span></div>
+        </div>
+
+        <div class="rp-sec recurring-box">
+          <div class="rp-sec-title">All Recurring Prices</div>
+          <div class="rp-line"><span>Weekly</span><span class="v" id="rWeekly">—</span></div>
+          <div class="rp-line"><span>Every 2 Weeks</span><span class="v" id="rBiweekly">—</span></div>
+          <div class="rp-line"><span>Every 4 Weeks</span><span class="v" id="rMonthly">—</span></div>
+        </div>
+
+        <div class="time-box">
+          <div class="tb-lbl">⏱ Estimated Job Time</div>
+          <div class="tb-val" id="tTime">—</div>
+          <div class="tb-sub" id="tSub">team of 2 · per person</div>
+        </div>
+
+        <button class="rp-reset" id="btnResetCalc">↺ Reset Calculator</button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="section-head"><h2>Settings</h2></div>
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">💾</div>
+      <div><h2>Save &amp; Restore Settings</h2><div class="sub">Your pricing &amp; business info auto-saves in this browser · export to back up or share</div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnSave">Save to Browser</button>
+      <button class="btn btn-outline" id="btnExport">Export Settings</button>
+      <button class="btn btn-outline" id="btnImport">Import Settings</button>
+      <button class="btn btn-outline" id="btnClear">Clear Saved</button>
+      <input type="file" id="fileImport" accept="application/json" hidden/>
+    </div>
+    <div class="note-list">
+      <p><b>Auto-save</b> stores your pricing customizer settings and business info in this browser only.</p>
+      <p>Use <b>Export</b> to download a backup file you can re-import on any device or browser.</p>
+      <p>Client name and quote note are <b>not</b> saved (those change per quote).</p>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="section-head"><h2>Quote Details</h2></div>
+  <div class="card">
+    <div class="card-title">
+      <div class="icon">🏢</div>
+      <div><h2>Quote Information</h2><div class="sub">Fills in the quote header and client section</div></div>
+    </div>
+
+    <div class="sec-divider"><span>Your Business</span></div>
+    <div class="form-grid">
+      <div><label class="dfl">Business Name</label><input class="text-input" id="qBizName" placeholder="Your Cleaning Co."/></div>
+      <div><label class="dfl">Tagline</label><input class="text-input" id="qTagline" placeholder="Professional Cleaning Services"/></div>
+      <div><label class="dfl">Business Email</label><input class="text-input" id="qEmail" placeholder="hello@example.com"/></div>
+      <div><label class="dfl">Business Phone</label><input class="text-input" id="qPhone" placeholder="(555) 123-4567"/></div>
+    </div>
+
+    <div class="sec-divider" style="margin-top:24px"><span>Client Info</span></div>
+    <div class="form-grid">
+      <div><label class="dfl">Client Name</label><input class="text-input" id="qClient" placeholder="Valued Client"/></div>
+      <div><label class="dfl">Custom Note</label><input class="text-input" id="qNote" placeholder="Note (shown on quote)"/></div>
+    </div>
+
+    <div style="margin-top:20px">
+      <div class="opt-row checked" id="optRecurring"><div class="cbox">✓</div><span>Include all recurring prices on quote</span></div>
+      <div class="opt-row" id="optRange"><div class="cbox">✓</div><span>Show estimated price range</span></div>
+    </div>
+
+    <div class="btn-row" style="margin-top:22px">
+      <button class="btn btn-primary" id="btnGenerate">Generate Quote</button>
+      <button class="btn btn-outline" id="btnPdf">Download PDF</button>
+    </div>
+  </div>
+
+  <div class="quote-doc" id="quoteDoc">
+    <div class="qd-top">
+      <div>
+        <div class="qd-biz" id="qdBiz">Your Cleaning Co.</div>
+        <div class="qd-tag" id="qdTag">Professional Cleaning Services</div>
+        <div class="qd-contact" id="qdContact"></div>
+      </div>
+      <div>
+        <div class="qd-label">QUOTE</div>
+        <div class="qd-for">Prepared for<b id="qdClient">Valued Client</b></div>
+      </div>
+    </div>
+    <table class="qd-table">
+      <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+      <tbody id="qdBody"></tbody>
+    </table>
+    <div class="qd-total"><div class="lbl">Estimate Total</div><div class="amt" id="qdTotal">$0.00</div></div>
+    <div class="qd-sub" id="qdRecurWrap">
+      <h4>All Recurring Prices (without add-ons)</h4>
+      <div class="row"><span>Weekly</span><b id="qdWeekly">—</b></div>
+      <div class="row"><span>Every 2 Weeks</span><b id="qdBiweekly">—</b></div>
+      <div class="row"><span>Every 4 Weeks</span><b id="qdMonthly">—</b></div>
+    </div>
+    <div class="qd-notes"><b>Notes</b><br/><span id="qdNotes">Final pricing may be adjusted if scope changes. Add-on services are billed per visit.</span></div>
+    <div class="qd-foot">Generated by Residential Pricing System</div>
+  </div>
+
+</div>
+
+<!-- ADD-ON MANAGER -->
+<div class="overlay" id="mgrOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h3>Manage Add-On Services</h3><p>Edit names &amp; prices, or remove items.</p></div>
+      <button class="modal-x" data-close="mgrOverlay">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="mgrList"></div>
+      <div class="mgr-add">
+        <input class="text-input" id="newAddonName" placeholder="Add new add-on"/>
+        <div class="mgr-price"><span>$</span><input type="number" id="newAddonPrice" value="0" min="0" step="1"/></div>
+        <button class="btn btn-primary" id="btnAddAddon">+ Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="overlay" id="chkOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h3>Service Checklist</h3><p>What is included with each service type.</p></div>
+      <button class="modal-x" data-close="chkOverlay">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="chk-legend">
+        <button data-chk="standard">✨ Standard</button>
+        <button data-chk="deep">🔬 Deep Clean</button>
+        <button data-chk="moveout">📦 Move-In/Out</button>
+      </div>
+      <div id="chkBody"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════ DATA ══════════ */
+var BASE = Object.freeze({
+  sqftStandard:{
+    '1-599':[79.6,1.32664],'600-1199':[89.048,1.484],'1200-1499':[102.448,1.70744],
+    '1500-1799':[107.328,1.78864],'1800-2099':[123.432,2.05744],'2100-2399':[131.736,2.19576],
+    '2400-2699':[148.928,2.48192],'2700-2999':[160.384,2.67288],'3000-3299':[175.632,2.92712],
+    '3300-3599':[188.352,3.13936],'3600-3999':[201.712,3.36168],'4000-4499':[215.064,3.58456],'4500+':null
+  },
+  fullBathTime:[0.80472,1.28072,2.12128,2.82016,3.51848,4.2168],
+  halfBathTime:[0.14952,0.29904,0.44856,0.59864],
+  bedroomTime:[0.0,0.146362,0.292723,0.487872,0.650496,0.81312,0.975744]
+});
+
+var SQFT_LABELS = [
+  ['1-599','1 – 599 sq ft'],['600-1199','600 – 1,199 sq ft'],['1200-1499','1,200 – 1,499 sq ft'],
+  ['1500-1799','1,500 – 1,799 sq ft'],['1800-2099','1,800 – 2,099 sq ft'],['2100-2399','2,100 – 2,399 sq ft'],
+  ['2400-2699','2,400 – 2,699 sq ft'],['2700-2999','2,700 – 2,999 sq ft'],['3000-3299','3,000 – 3,299 sq ft'],
+  ['3300-3599','3,300 – 3,599 sq ft'],['3600-3999','3,600 – 3,999 sq ft'],['4000-4499','4,000 – 4,499 sq ft'],
+  ['4500+','4,500+ sq ft (Custom Quote)']
+];
+
+var CHECKLIST = {
+  'Living Spaces & Bedrooms':[
+    ['Dust furniture & objects',true,true,null],['Dust light fixtures & shelves',true,true,true],
+    ['Dust mirrors',true,true,true],['Vacuum or lint roll furniture',true,true,null],
+    ['Make any unmade beds',true,true,null],['Straighten blankets',true,true,null],
+    ['Vacuum & mop floors (including stairs)',true,true,true],['Tidy toys or objects',true,true,null],
+    ['Baseboards cleaned',false,true,true],['Blinds dusted',false,true,true],
+    ['Reachable windows & sills cleaned (excl. outside)',false,true,true],
+    ['Light switches cleaned',false,true,true],['Ceiling fans dusted',false,true,true],
+    ['Vents dusted',false,true,true],['Cabinets spot cleaned',false,true,true],
+    ['Walls, trim, & doors spot cleaned',null,null,true],['Remove trash',true,true,true]
+  ],
+  'Kitchen':[
+    ['Dust furniture & objects',true,true,null],['Dust light fixtures & accessible shelving',true,true,true],
+    ['Clean outside of refrigerator',true,true,true],['Clean inside refrigerator (add-on available)',false,false,true],
+    ['Clean outside of dishwasher',true,true,true],['Clean outside of oven',true,true,true],
+    ['Clean inside oven (add-on available)',false,false,true],['Scrub and clean stovetop',true,true,true],
+    ['Clean and disinfect sink if easily accessible, without dishes',true,true,true],
+    ['Clean inside and outside of microwave',true,true,true],
+    ['Wipe down appliances on counters',true,true,null],['Clean outside of trash can',true,true,true],
+    ['Baseboards cleaned',false,true,true],['Blinds dusted',false,true,true],
+    ['Reachable windows & sills cleaned',false,true,true],['Light switches cleaned',false,true,true],
+    ['Ceiling fans dusted',false,true,true],['Cabinets spot cleaned',false,true,true],
+    ['Walls, trim, & doors spot cleaned',false,false,true],['Vacuum and mop floors',true,true,true]
+  ],
+  'Bathrooms':[
+    ['Dust furniture & objects',true,true,null],['Dust light fixtures & accessible shelves',true,true,true],
+    ['Clean mirrors',true,true,true],['Clean and disinfect counters and sinks',true,true,true],
+    ['Clean and disinfect inside/outside of shower and/or tub',true,true,true],
+    ['Clean glass shower doors',true,true,true],['Wipe and shine faucets',true,true,true],
+    ['Clean and disinfect inside and outside of toilets',true,true,true],
+    ['Straighten towels and other objects',true,true,true],['Clean outside of trash cans',true,true,true],
+    ['Baseboards cleaned',false,true,true],['Blinds dusted',false,true,true],
+    ['Reachable windows cleaned',false,true,true],['Light switches cleaned',false,true,true],
+    ['Ceiling fans dusted',false,true,true],['Vents dusted',false,true,true],
+    ['Cabinets spot cleaned',false,true,true],['Walls, trim, & doors spot cleaned',false,false,true],
+    ['Remove trash',true,true,true],['Vacuum and mop floors',true,true,true]
+  ]
+};
+
+var DEFAULT_ADDONS = [
+  {name:'Pets',price:0},{name:'Change Bed Linens (each)',price:5},
+  {name:'Inside Refrigerator',price:50},{name:'Inside Oven',price:60},
+  {name:'Interior Windows (each)',price:3},{name:'Wet Wipe Blinds (each)',price:10}
+];
+
+var DEFAULTS = {
+  hourlyRate:60,priceFactor:1.0,deepFactor:1.5,moveoutFactor:2.0,
+  discWeekly:35,discBiweekly:30,discMonthly:20,minPrice:125
+};
+
+var addons = JSON.parse(JSON.stringify(DEFAULT_ADDONS));
+
+var state = {
+  sqft:'1500-1799',bedrooms:3,fullBaths:2,halfBaths:0,
+  type:'standard',freq:'biweekly',extras:{},
+  hourlyRate:60,priceFactor:1.0,deepFactor:1.5,moveoutFactor:2.0,
+  discWeekly:35,discBiweekly:30,discMonthly:20,minPrice:125
+};
+
+var showRecurringOnQuote = true;
+var showPriceRange = false;
+var checklistType = 'standard';
+var STORE_KEY = 'residentialPricingCalc.v1';
+
+/* ══════════ HELPERS ══════════ */
+function el(id){ return document.getElementById(id); }
+function fmt(n){ return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function hhmm(d){ var h=Math.floor(d),m=Math.round((d-h)*60); if(m===60){h++;m=0;} return (h<10?'0':'')+h+':'+(m<10?'0':'')+m; }
+function freqMult(f){
+  if(f==='weekly')   return 1-state.discWeekly/100;
+  if(f==='biweekly') return 1-state.discBiweekly/100;
+  if(f==='monthly')  return 1-state.discMonthly/100;
+  return 1.0;
+}
+function toast(msg){ var t=el('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},2200); }
+
+/* ══════════ CALCULATE ══════════
+   serviceRaw  — service subtotal after sqft+bed+bath+typeMult+freqMult (NO extras, NO min clamp)
+   extrasTotal — sum of all add-ons
+   serviceShown = max(serviceRaw, minPrice); finalTotal = serviceShown + extrasTotal
+*/
+function calculate(){
+  var sqftData = BASE.sqftStandard[state.sqft];
+  if(!sqftData) return {isCustom:true};
+
+  var f=state.priceFactor, hr=state.hourlyRate, hrS=hr/60;
+  var typeMult = state.type==='deep'?state.deepFactor:state.type==='moveout'?state.moveoutFactor:1.0;
+
+  var sqftPrice=sqftData[0]*hrS*f, sqftTime=sqftData[1]*f;
+  var br=Math.min(state.bedrooms,6);
+  var brTime=BASE.bedroomTime[br]*f, brPrice=BASE.bedroomTime[br]*hr*f;
+  var fb=Math.min(state.fullBaths,6);
+  var fbTime=fb>0?BASE.fullBathTime[fb-1]*f:0, fbPrice=fb>0?BASE.fullBathTime[fb-1]*hr*f:0;
+  var hb=Math.min(state.halfBaths,4);
+  var hbTime=hb>0?BASE.halfBathTime[hb-1]*f:0, hbPrice=hb>0?BASE.halfBathTime[hb-1]*hr*f:0;
+
+  var extrasTotal=0;
+  Object.keys(state.extras).forEach(function(k){
+    var qty=state.extras[k]||0;
+    if(qty>0){ var a=addons[parseInt(k,10)]; if(a) extrasTotal += (a.price||0)*qty; }
+  });
+
+  var standardBaseSubtotal = sqftPrice+brPrice+fbPrice+hbPrice;
+  var baseSubtotal = standardBaseSubtotal * typeMult;
+  var initTime = (sqftTime+brTime+fbTime+hbTime) * typeMult;
+
+  function recurBase(freq){ return standardBaseSubtotal*freqMult(freq); }
+  var weeklyBase=recurBase('weekly'), biweeklyBase=recurBase('biweekly'), monthlyBase=recurBase('monthly');
+
+  var fm=freqMult(state.freq), serviceRaw, discAmt=0;
+  if(state.freq==='onetime'){ serviceRaw=baseSubtotal; }
+  else { serviceRaw=baseSubtotal*fm; discAmt=baseSubtotal-serviceRaw; }
+
+  var currentTime = state.freq==='onetime'?initTime:initTime*fm;
+
+  return {
+    isCustom:false,sqftPrice:sqftPrice,brPrice:brPrice,fbPrice:fbPrice,hbPrice:hbPrice,
+    extrasTotal:extrasTotal,discAmt:discAmt,initTime:initTime,
+    currentTime:currentTime,currentTeamTime:currentTime/2,
+    weeklyP:weeklyBase+extrasTotal,biweeklyP:biweeklyBase+extrasTotal,monthlyP:monthlyBase+extrasTotal,
+    weeklyBase:weeklyBase,biweeklyBase:biweeklyBase,monthlyBase:monthlyBase,
+    serviceRaw:serviceRaw,baseSubtotal:baseSubtotal,standardBaseSubtotal:standardBaseSubtotal
+  };
+}
+
+/* ══════════ RENDER ══════════ */
+function render(){
+  var r = calculate();
+  var priceEl = el('rpPrice');
+  priceEl.classList.add('flash');
+  setTimeout(function(){ priceEl.classList.remove('flash'); },120);
+
+  var fn = el('rpFactorNote');
+  if(Math.abs(state.priceFactor-1.0)>0.005){
+    fn.textContent='⚙ '+(state.priceFactor>1?'+':'')+Math.round((state.priceFactor-1)*100)+'% active';
+    fn.classList.add('visible');
+  } else fn.classList.remove('visible');
+
+  var icons={standard:'✨',deep:'🔬',moveout:'📦'};
+  var labels={standard:'Standard',deep:'Deep Clean',moveout:'Move-In/Out'};
+  var flabels={weekly:'Weekly',biweekly:'Every 2 Wks',monthly:'Every 4 Wks',onetime:'One-Time'};
+
+  var cust=el('rpCustom'), bkdn=el('breakdownSection');
+  var tbox=document.querySelector('.time-box'), rbox=document.querySelector('.recurring-box');
+
+  if(r.isCustom){
+    priceEl.style.fontSize='40px';
+    priceEl.textContent='Custom';
+    el('rpBadge').textContent=labels[state.type]+' · '+flabels[state.freq];
+    el('rpMinNote').classList.remove('visible');
+    cust.style.display='block';
+    [bkdn,tbox,rbox].forEach(function(e){ e.style.opacity='0.3'; });
+    renderQuote(r);
+    return;
+  }
+
+  cust.style.display='none';
+  [bkdn,tbox,rbox].forEach(function(e){ e.style.opacity='1'; });
+
+  // Minimum applies to service only, then extras are added on top
+  var serviceShown = Math.max(r.serviceRaw, state.minPrice);
+  var finalShownTotal = serviceShown + r.extrasTotal;
+  var minApplied = serviceShown > r.serviceRaw;
+  var rangeEnd = finalShownTotal + (2*state.hourlyRate);
+
+  if(showPriceRange){
+    priceEl.style.fontSize='32px';
+    priceEl.textContent=fmt(finalShownTotal)+' – '+fmt(rangeEnd);
+  } else {
+    priceEl.style.fontSize='50px';
+    priceEl.textContent=fmt(finalShownTotal);
+  }
+
+  el('rpMinNote').classList.toggle('visible',minApplied);
+  el('rpBadge').textContent=icons[state.type]+' '+labels[state.type]+' · '+flabels[state.freq];
+
+  el('bSqft').textContent=fmt(r.sqftPrice);
+  el('bBedN').textContent=state.bedrooms;
+  el('bBed').textContent=fmt(r.brPrice);
+  el('bFullN').textContent=state.fullBaths;
+  el('bFull').textContent=fmt(r.fbPrice);
+  el('bHalfN').textContent=state.halfBaths;
+  el('bHalf').textContent=fmt(r.hbPrice);
+  el('bExtras').textContent=fmt(r.extrasTotal);
+  el('bDisc').textContent=r.discAmt>0?'− '+fmt(r.discAmt):'—';
+  el('bTotal').textContent=fmt(finalShownTotal);
+
+  el('rWeekly').textContent=fmt(Math.max(r.weeklyBase,state.minPrice)+r.extrasTotal);
+  el('rBiweekly').textContent=fmt(Math.max(r.biweeklyBase,state.minPrice)+r.extrasTotal);
+  el('rMonthly').textContent=fmt(Math.max(r.monthlyBase,state.minPrice)+r.extrasTotal);
+
+  el('tTime').textContent=hhmm(r.currentTime);
+  el('tSub').textContent='team of 2 · '+hhmm(r.currentTeamTime)+' per person';
+
+  renderQuote(r);
+}
+
+function renderControls(){
+  el('vBed').textContent=state.bedrooms;
+  el('vFull').textContent=state.fullBaths;
+  el('vHalf').textContent=state.halfBaths;
+  el('selSqft').value=state.sqft;
+
+  document.querySelectorAll('.type-opt').forEach(function(o){
+    o.classList.toggle('active',o.dataset.type===state.type);
+  });
+
+  var recurringAllowed = state.type==='standard';
+  document.querySelectorAll('.freq-opt').forEach(function(o){
+    var isOneTime = o.dataset.freq==='onetime';
+    o.classList.toggle('disabled', !recurringAllowed && !isOneTime);
+    o.classList.toggle('active', o.dataset.freq===state.freq);
+  });
+  el('lockNote').style.display = recurringAllowed?'flex':'none';
+
+  el('fdWeekly').textContent='−'+state.discWeekly+'%';
+  el('fdBiweekly').textContent='−'+state.discBiweekly+'%';
+  el('fdMonthly').textContent='−'+state.discMonthly+'%';
+
+  el('nWeekly').textContent='Multiplier: '+(1-state.discWeekly/100).toFixed(2)+'×';
+  el('nBiweekly').textContent='Multiplier: '+(1-state.discBiweekly/100).toFixed(2)+'×';
+  el('nMonthly').textContent='Multiplier: '+(1-state.discMonthly/100).toFixed(2)+'×';
+
+  var bf=el('bFactor');
+  bf.textContent=state.priceFactor.toFixed(2)+'×';
+  bf.classList.toggle('above',state.priceFactor>1.005);
+  bf.classList.toggle('below',state.priceFactor<0.995);
+  el('bDeep').textContent=state.deepFactor.toFixed(2)+'×';
+  el('bMove').textContent=state.moveoutFactor.toFixed(2)+'×';
+
+  // steppers min/max
+  document.querySelectorAll('.stepper button').forEach(function(b){
+    var key=b.dataset.step, dir=parseInt(b.dataset.dir,10);
+    var max = key==='halfBaths'?4:6;
+    var min = key==='fullBaths'?0:0;
+    b.disabled = dir>0 ? state[key]>=max : state[key]<=min;
+  });
+}
+
+function renderAddons(){
+  var list=el('addonList');
+  list.innerHTML='';
+  addons.forEach(function(a,i){
+    var qty=state.extras[i]||0;
+    var isEach=/\(each\)/i.test(a.name);
+    var row=document.createElement('div');
+    row.className='addon-row'+(qty>0?' checked':'');
+    row.innerHTML='<div class="cbox">✓</div><div class="a-name"></div>'+
+      (qty>0&&isEach?'<div class="qty-mini"><button data-q="-1">−</button><div class="q">'+qty+'</div><button data-q="1">+</button></div>':'')+
+      '<div class="a-price">'+fmt(a.price)+(isEach?' ea':'')+'</div>';
+    row.querySelector('.a-name').textContent=a.name;
+    row.addEventListener('click',function(ev){
+      if(ev.target.dataset.q) return;
+      state.extras[i] = (state.extras[i]||0)>0 ? 0 : 1;
+      renderAddons(); render();
+    });
+    row.querySelectorAll('[data-q]').forEach(function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var next=(state.extras[i]||0)+parseInt(b.dataset.q,10);
+        state.extras[i]=Math.max(0,Math.min(99,next));
+        renderAddons(); render();
+      });
+    });
+    list.appendChild(row);
+  });
+}
+
+function renderManager(){
+  var box=el('mgrList');
+  box.innerHTML='';
+  addons.forEach(function(a,i){
+    var row=document.createElement('div');
+    row.className='mgr-row';
+    row.innerHTML='<span style="color:var(--ink-light);font-size:12px">✏️</span>'+
+      '<input class="n" type="text"/>'+
+      '<div class="mgr-price"><span>$</span><input type="number" min="0" step="1"/></div>'+
+      '<button class="mgr-del">✕</button>';
+    var nameIn=row.querySelector('input.n'), priceIn=row.querySelector('.mgr-price input');
+    nameIn.value=a.name; priceIn.value=a.price;
+    nameIn.addEventListener('input',function(){ addons[i].name=nameIn.value; renderAddons(); render(); });
+    priceIn.addEventListener('input',function(){ addons[i].price=parseFloat(priceIn.value)||0; renderAddons(); render(); });
+    row.querySelector('.mgr-del').addEventListener('click',function(){
+      addons.splice(i,1);
+      var shifted={};
+      Object.keys(state.extras).forEach(function(k){
+        var n=parseInt(k,10);
+        if(n<i) shifted[n]=state.extras[k];
+        else if(n>i) shifted[n-1]=state.extras[k];
+      });
+      state.extras=shifted;
+      renderManager(); renderAddons(); render();
+    });
+    box.appendChild(row);
+  });
+}
+
+function renderChecklist(){
+  var idx = checklistType==='standard'?1:checklistType==='deep'?2:3;
+  var box=el('chkBody');
+  box.innerHTML='';
+  Object.keys(CHECKLIST).forEach(function(group){
+    var g=document.createElement('div');
+    g.className='chk-group';
+    var h=document.createElement('h4'); h.textContent=group; g.appendChild(h);
+    CHECKLIST[group].forEach(function(item){
+      var included = item[idx];
+      var d=document.createElement('div');
+      d.className='chk-item'+(included?'':' off');
+      d.innerHTML='<span class="mark">'+(included?'✓':'—')+'</span>';
+      var s=document.createElement('span'); s.textContent=item[0];
+      d.appendChild(s);
+      g.appendChild(d);
+    });
+    box.appendChild(g);
+  });
+  document.querySelectorAll('[data-chk]').forEach(function(b){
+    b.classList.toggle('active',b.dataset.chk===checklistType);
+  });
+}
+
+function renderQuote(r){
+  var labels={standard:'Standard Clean',deep:'Deep Clean',moveout:'Move-In/Out Clean'};
+  var flabels={weekly:'Weekly',biweekly:'Every 2 Weeks',monthly:'Every 4 Weeks',onetime:'One-Time'};
+
+  el('qdBiz').textContent = el('qBizName').value || 'Your Cleaning Co.';
+  el('qdTag').textContent = el('qTagline').value || 'Professional Cleaning Services';
+  var contact=[];
+  if(el('qEmail').value) contact.push(el('qEmail').value);
+  if(el('qPhone').value) contact.push(el('qPhone').value);
+  el('qdContact').textContent=contact.join(' · ');
+  el('qdClient').textContent = el('qClient').value || 'Valued Client';
+
+  var body=el('qdBody');
+  body.innerHTML='';
+  function line(desc,amt){
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td'); td1.textContent=desc;
+    var td2=document.createElement('td'); td2.textContent=amt;
+    tr.appendChild(td1); tr.appendChild(td2); body.appendChild(tr);
+  }
+
+  if(r.isCustom){
+    line(labels[state.type]+' · 4,500+ sq ft','Custom Quote');
+    el('qdTotal').textContent='Custom';
+    el('qdRecurWrap').style.display='none';
+  } else {
+    var serviceShown=Math.max(r.serviceRaw,state.minPrice);
+    var total=serviceShown+r.extrasTotal;
+    var propDesc = state.bedrooms+' bed · '+state.fullBaths+' full bath'+(state.halfBaths?' · '+state.halfBaths+' half bath':'');
+    line(labels[state.type]+' — '+flabels[state.freq],fmt(serviceShown));
+    line(propDesc+' · '+(SQFT_LABELS.filter(function(s){return s[0]===state.sqft;})[0]||['',''])[1],'');
+    addons.forEach(function(a,i){
+      var q=state.extras[i]||0;
+      if(q>0) line('Add-on: '+a.name+(q>1?' ×'+q:''),fmt(a.price*q));
+    });
+    el('qdTotal').textContent = showPriceRange
+      ? fmt(total)+' – '+fmt(total+2*state.hourlyRate)
+      : fmt(total);
+
+    el('qdRecurWrap').style.display = showRecurringOnQuote?'block':'none';
+    el('qdWeekly').textContent=fmt(Math.max(r.weeklyBase,state.minPrice));
+    el('qdBiweekly').textContent=fmt(Math.max(r.biweeklyBase,state.minPrice));
+    el('qdMonthly').textContent=fmt(Math.max(r.monthlyBase,state.minPrice));
+  }
+
+  var note=el('qNote').value.trim();
+  el('qdNotes').textContent = note
+    ? note+' Final pricing may be adjusted if scope changes. Add-on services are billed per visit.'
+    : 'Final pricing may be adjusted if scope changes. Add-on services are billed per visit.';
+}
+
+/* ══════════ PERSISTENCE ══════════ */
+function collectSettings(){
+  return {
+    pricing:{
+      hourlyRate:state.hourlyRate,priceFactor:state.priceFactor,deepFactor:state.deepFactor,
+      moveoutFactor:state.moveoutFactor,discWeekly:state.discWeekly,discBiweekly:state.discBiweekly,
+      discMonthly:state.discMonthly,minPrice:state.minPrice
+    },
+    addons:addons,
+    business:{
+      name:el('qBizName').value,tagline:el('qTagline').value,
+      email:el('qEmail').value,phone:el('qPhone').value
+    },
+    options:{recurring:showRecurringOnQuote,range:showPriceRange}
+  };
+}
+function applySettings(data){
+  if(!data) return;
+  if(data.pricing) Object.keys(data.pricing).forEach(function(k){ state[k]=data.pricing[k]; });
+  if(Array.isArray(data.addons) && data.addons.length){ addons=data.addons; state.extras={}; }
+  if(data.business){
+    el('qBizName').value=data.business.name||'';
+    el('qTagline').value=data.business.tagline||'';
+    el('qEmail').value=data.business.email||'';
+    el('qPhone').value=data.business.phone||'';
+  }
+  if(data.options){
+    showRecurringOnQuote=!!data.options.recurring;
+    showPriceRange=!!data.options.range;
+    el('optRecurring').classList.toggle('checked',showRecurringOnQuote);
+    el('optRange').classList.toggle('checked',showPriceRange);
+  }
+  syncInputsFromState();
+}
+function save(silent){
+  try{
+    localStorage.setItem(STORE_KEY,JSON.stringify(collectSettings()));
+    if(!silent) toast('Settings saved to this browser');
+  }catch(e){ if(!silent) toast('Could not save — storage unavailable'); }
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(STORE_KEY);
+    if(raw) applySettings(JSON.parse(raw));
+  }catch(e){}
+}
+function syncInputsFromState(){
+  el('sFactor').value=Math.round(state.priceFactor*100);
+  el('sDeep').value=Math.round(state.deepFactor*100);
+  el('sMove').value=Math.round(state.moveoutFactor*100);
+  el('iRate').value=state.hourlyRate;
+  el('iWeekly').value=state.discWeekly;
+  el('iBiweekly').value=state.discBiweekly;
+  el('iMonthly').value=state.discMonthly;
+  el('iMin').value=state.minPrice;
+}
+
+/* ══════════ PDF ══════════ */
+function downloadPdf(){
+  if(!window.jspdf){ toast('PDF library still loading — try again'); return; }
+  var r=calculate();
+  var doc=new window.jspdf.jsPDF({unit:'pt',format:'letter'});
+  var M=56, y=64, W=doc.internal.pageSize.getWidth();
+  var labels={standard:'Standard Clean',deep:'Deep Clean',moveout:'Move-In/Out Clean'};
+  var flabels={weekly:'Weekly',biweekly:'Every 2 Weeks',monthly:'Every 4 Weeks',onetime:'One-Time'};
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(17); doc.setTextColor(127,23,23);
+  doc.text(el('qBizName').value||'Your Cleaning Co.',M,y);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(140,120,120);
+  y+=15; doc.text(el('qTagline').value||'Professional Cleaning Services',M,y);
+  var contact=[el('qEmail').value,el('qPhone').value].filter(Boolean).join('  ·  ');
+  if(contact){ y+=13; doc.text(contact,M,y); }
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(198,40,40);
+  doc.text('QUOTE',W-M,64,{align:'right'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(140,120,120);
+  doc.text('Prepared for',W-M,80,{align:'right'});
+  doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(35,26,26);
+  doc.text(el('qClient').value||'Valued Client',W-M,94,{align:'right'});
+
+  y+=22; doc.setDrawColor(198,40,40); doc.setLineWidth(1.6); doc.line(M,y,W-M,y);
+
+  y+=26; doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(140,120,120);
+  doc.text('DESCRIPTION',M,y); doc.text('AMOUNT',W-M,y,{align:'right'});
+  y+=8; doc.setDrawColor(230,215,215); doc.setLineWidth(.7); doc.line(M,y,W-M,y);
+
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(35,26,26);
+  function row(desc,amt){
+    y+=20; doc.text(desc,M,y);
+    if(amt) doc.text(amt,W-M,y,{align:'right'});
+    y+=8; doc.setDrawColor(240,228,228); doc.line(M,y,W-M,y);
+  }
+
+  var totalText;
+  if(r.isCustom){
+    row(labels[state.type]+' · 4,500+ sq ft','Custom Quote');
+    totalText='Custom Quote';
+  } else {
+    var serviceShown=Math.max(r.serviceRaw,state.minPrice);
+    var total=serviceShown+r.extrasTotal;
+    row(labels[state.type]+' — '+flabels[state.freq],fmt(serviceShown));
+    var sq=(SQFT_LABELS.filter(function(s){return s[0]===state.sqft;})[0]||['',''])[1];
+    row(state.bedrooms+' bed · '+state.fullBaths+' full bath'+(state.halfBaths?' · '+state.halfBaths+' half bath':'')+' · '+sq,'');
+    addons.forEach(function(a,i){
+      var q=state.extras[i]||0;
+      if(q>0) row('Add-on: '+a.name+(q>1?' x'+q:''),fmt(a.price*q));
+    });
+    totalText = showPriceRange ? fmt(total)+' - '+fmt(total+2*state.hourlyRate) : fmt(total);
+  }
+
+  y+=24;
+  doc.setFillColor(253,238,238); doc.roundedRect(M,y-16,W-2*M,42,5,5,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(127,23,23);
+  doc.text('ESTIMATE TOTAL',M+16,y+3);
+  doc.setFontSize(16); doc.text(totalText,W-M-16,y+6,{align:'right'});
+  y+=44;
+
+  if(showRecurringOnQuote && !r.isCustom){
+    y+=26; doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(140,120,120);
+    doc.text('ALL RECURRING PRICES (WITHOUT ADD-ONS)',M,y);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(60,50,50);
+    [['Weekly',r.weeklyBase],['Every 2 Weeks',r.biweeklyBase],['Every 4 Weeks',r.monthlyBase]].forEach(function(p){
+      y+=17; doc.text(p[0],M,y);
+      doc.text(fmt(Math.max(p[1],state.minPrice)),W-M,y,{align:'right'});
+    });
+  }
+
+  y+=32; doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(140,120,120);
+  doc.text('NOTES',M,y);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9.5);
+  var note=el('qNote').value.trim();
+  var noteText=(note?note+' ':'')+'Final pricing may be adjusted if scope changes. Add-on services are billed per visit.';
+  y+=14; doc.text(doc.splitTextToSize(noteText,W-2*M),M,y);
+
+  var fy=doc.internal.pageSize.getHeight()-48;
+  doc.setDrawColor(240,228,228); doc.line(M,fy-14,W-M,fy-14);
+  doc.setFontSize(8); doc.setTextColor(160,145,145);
+  doc.text('Generated by Residential Pricing System',W/2,fy,{align:'center'});
+
+  var client=(el('qClient').value||'client').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+  doc.save('quote-'+client+'.pdf');
+}
+
+/* ══════════ WIRING ══════════ */
+(function init(){
+  // sqft options
+  var sel=el('selSqft');
+  SQFT_LABELS.forEach(function(s){
+    var o=document.createElement('option');
+    o.value=s[0]; o.textContent=s[1];
+    sel.appendChild(o);
+  });
+
+  el('custToggle').addEventListener('click',function(){
+    this.classList.toggle('open');
+    el('custBody').classList.toggle('open');
+  });
+
+  // steppers
+  document.querySelectorAll('.stepper button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var key=b.dataset.step, dir=parseInt(b.dataset.dir,10);
+      var max = key==='halfBaths'?4:6;
+      state[key]=Math.max(0,Math.min(max,state[key]+dir));
+      renderControls(); render();
+    });
+  });
+
+  sel.addEventListener('change',function(){ state.sqft=sel.value; render(); });
+
+  document.querySelectorAll('.type-opt').forEach(function(o){
+    o.addEventListener('click',function(){
+      state.type=o.dataset.type;
+      if(state.type!=='standard') state.freq='onetime';
+      checklistType=state.type;
+      renderControls(); render();
+    });
+  });
+
+  document.querySelectorAll('.freq-opt').forEach(function(o){
+    o.addEventListener('click',function(){
+      if(o.classList.contains('disabled')) return;
+      state.freq=o.dataset.freq;
+      renderControls(); render();
+    });
+  });
+
+  // sliders
+  el('sFactor').addEventListener('input',function(){ state.priceFactor=this.value/100; renderControls(); render(); });
+  el('sDeep').addEventListener('input',function(){ state.deepFactor=this.value/100; renderControls(); render(); });
+  el('sMove').addEventListener('input',function(){ state.moveoutFactor=this.value/100; renderControls(); render(); });
+
+  // numeric fields
+  [['iRate','hourlyRate',1,999],['iWeekly','discWeekly',0,99],['iBiweekly','discBiweekly',0,99],
+   ['iMonthly','discMonthly',0,99],['iMin','minPrice',0,9999]].forEach(function(f){
+    el(f[0]).addEventListener('input',function(){
+      var v=parseFloat(this.value);
+      if(isNaN(v)) return;
+      state[f[1]]=Math.max(f[2],Math.min(f[3],v));
+      renderControls(); render();
+    });
+  });
+
+  el('btnResetCust').addEventListener('click',function(){
+    Object.keys(DEFAULTS).forEach(function(k){ state[k]=DEFAULTS[k]; });
+    syncInputsFromState(); renderControls(); render();
+    toast('Pricing customizer reset to defaults');
+  });
+
+  el('btnResetCalc').addEventListener('click',function(){
+    state.sqft='1500-1799'; state.bedrooms=3; state.fullBaths=2; state.halfBaths=0;
+    state.type='standard'; state.freq='biweekly'; state.extras={};
+    renderControls(); renderAddons(); render();
+    toast('Calculator reset');
+  });
+
+  // add-on manager
+  el('btnManage').addEventListener('click',function(){ renderManager(); el('mgrOverlay').classList.add('open'); });
+  el('btnAddAddon').addEventListener('click',function(){
+    var n=el('newAddonName').value.trim();
+    if(!n){ toast('Enter an add-on name'); return; }
+    addons.push({name:n,price:parseFloat(el('newAddonPrice').value)||0});
+    el('newAddonName').value=''; el('newAddonPrice').value=0;
+    renderManager(); renderAddons(); render();
+  });
+
+  // checklist
+  el('btnChecklist').addEventListener('click',function(){ renderChecklist(); el('chkOverlay').classList.add('open'); });
+  document.querySelectorAll('[data-chk]').forEach(function(b){
+    b.addEventListener('click',function(){ checklistType=b.dataset.chk; renderChecklist(); });
+  });
+
+  // overlays
+  document.querySelectorAll('[data-close]').forEach(function(b){
+    b.addEventListener('click',function(){ el(b.dataset.close).classList.remove('open'); });
+  });
+  document.querySelectorAll('.overlay').forEach(function(ov){
+    ov.addEventListener('click',function(e){ if(e.target===ov) ov.classList.remove('open'); });
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(function(o){ o.classList.remove('open'); });
+  });
+
+  // quote options
+  el('optRecurring').addEventListener('click',function(){
+    showRecurringOnQuote=!showRecurringOnQuote;
+    this.classList.toggle('checked',showRecurringOnQuote);
+    render();
+  });
+  el('optRange').addEventListener('click',function(){
+    showPriceRange=!showPriceRange;
+    this.classList.toggle('checked',showPriceRange);
+    render();
+  });
+
+  ['qBizName','qTagline','qEmail','qPhone','qClient','qNote'].forEach(function(id){
+    el(id).addEventListener('input',render);
+  });
+
+  el('btnGenerate').addEventListener('click',function(){
+    render(); save(true);
+    el('quoteDoc').scrollIntoView({behavior:'smooth',block:'start'});
+    toast('Quote generated');
+  });
+  el('btnPdf').addEventListener('click',downloadPdf);
+
+  // settings
+  el('btnSave').addEventListener('click',function(){ save(false); });
+  el('btnExport').addEventListener('click',function(){
+    var blob=new Blob([JSON.stringify(collectSettings(),null,2)],{type:'application/json'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url; a.download='pricing-settings.json'; a.click();
+    URL.revokeObjectURL(url);
+    toast('Settings exported');
+  });
+  el('btnImport').addEventListener('click',function(){ el('fileImport').click(); });
+  el('fileImport').addEventListener('change',function(){
+    var file=this.files[0];
+    if(!file) return;
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{
+        applySettings(JSON.parse(reader.result));
+        renderControls(); renderAddons(); render();
+        toast('Settings imported');
+      }catch(e){ toast('Invalid settings file'); }
+    };
+    reader.readAsText(file);
+    this.value='';
+  });
+  el('btnClear').addEventListener('click',function(){
+    try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+    toast('Saved settings cleared');
+  });
+
+  // auto-save on change
+  document.addEventListener('input',function(){ save(true); });
+  document.addEventListener('click',function(){ save(true); });
+
+  load();
+  renderControls(); renderAddons(); render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "vertical": "pressure-washing",
+  "name": "Pressure Washing",
+  "tagline": "Driveways, siding, decks and roofs",
+  "icon": "droplet",
+  "currency": "USD",
+  "hourlyRate": 85,
+  "priceFactor": 1,
+  "minimumPrice": 175,
+  "roundTo": 5,
+  "crewSize": 2,
+  "defaultCrew": "crew2",
+  "rangeBufferMinutes": 45,
+  "sizeLabel": "Property size",
+  "sizeLabelEs": "Tamaño de la propiedad",
+  "crewOptions": [
+    { "id": "crew2", "size": 2, "label": "Team of 2", "labelEs": "Equipo de 2", "blurb": "Our standard crew", "blurbEs": "Nuestro equipo estándar", "multiplier": 1 },
+    { "id": "crew4", "size": 4, "label": "Team of 4", "labelEs": "Equipo de 4", "blurb": "Done in about half the time", "blurbEs": "Listo en casi la mitad del tiempo", "multiplier": 1 },
+    { "id": "crew6", "size": 6, "label": "Team of 6", "labelEs": "Equipo de 6", "blurb": "Whole property in one visit", "blurbEs": "Toda la propiedad en una visita", "multiplier": 1 }
+  ],
+  "sizeTiers": [
+    { "id": "p0", "label": "Small (1 story, under 1,500 sq ft)", "labelEs": "Pequeña (1 piso, menos de 1,500 pies²)", "minutes": 90 },
+    { "id": "p1", "label": "Medium (1–2 story, 1,500 – 2,500 sq ft)", "labelEs": "Mediana (1–2 pisos, 1,500 – 2,500 pies²)", "minutes": 135 },
+    { "id": "p2", "label": "Large (2 story, 2,500 – 3,500 sq ft)", "labelEs": "Grande (2 pisos, 2,500 – 3,500 pies²)", "minutes": 190 },
+    { "id": "p3", "label": "Extra large (3,500 – 5,000 sq ft)", "labelEs": "Extra grande (3,500 – 5,000 pies²)", "minutes": 250 },
+    { "id": "p4", "label": "Estate / commercial", "labelEs": "Finca / comercial", "minutes": 0, "custom": true, "customMessage": "Commercial and estate jobs are quoted on site — access, water supply and surface type all move the number.", "customMessageEs": "Los trabajos comerciales y de fincas se cotizan en sitio: el acceso, el suministro de agua y el tipo de superficie cambian el precio." }
+  ],
+  "modifiers": [
+    {
+      "id": "driveway",
+      "label": "Driveway bays",
+      "labelEs": "Espacios de cochera",
+      "help": "Roughly one bay per parked car.",
+      "helpEs": "Aproximadamente un espacio por carro estacionado.",
+      "min": 0, "max": 6, "default": 2,
+      "minutesEach": 22
+    },
+    {
+      "id": "walkway",
+      "label": "Walkways / paths",
+      "labelEs": "Andadores / senderos",
+      "min": 0, "max": 6, "default": 1,
+      "minutesEach": 15
+    },
+    {
+      "id": "stories",
+      "label": "Extra stories above ground floor",
+      "labelEs": "Pisos adicionales sobre la planta baja",
+      "help": "Height means ladders, and ladders mean time.",
+      "helpEs": "La altura significa escaleras, y las escaleras significan tiempo.",
+      "min": 0, "max": 3, "default": 1,
+      "minutesEach": 35
+    }
+  ],
+  "services": [
+    { "id": "softwash", "label": "Soft Wash", "labelEs": "Lavado Suave", "blurb": "Low pressure, siding safe", "blurbEs": "Baja presión, seguro para el revestimiento", "multiplier": 1, "icon": "droplet", "allowRecurring": true },
+    { "id": "standard", "label": "Pressure Wash", "labelEs": "Lavado a Presión", "blurb": "Hard surfaces, full pressure", "blurbEs": "Superficies duras, presión completa", "multiplier": 1.2, "icon": "sparkle", "allowRecurring": true },
+    { "id": "restore", "label": "Restoration Wash", "labelEs": "Lavado de Restauración", "blurb": "Heavy staining, oxidation, mould", "blurbEs": "Manchas fuertes, oxidación y moho", "multiplier": 1.85, "icon": "beaker", "allowRecurring": false }
+  ],
+  "frequencies": [
+    { "id": "biannual", "label": "Twice a year", "labelEs": "Dos veces al año", "discount": 0.12 },
+    { "id": "annual", "label": "Once a year", "labelEs": "Una vez al año", "discount": 0.06 },
+    { "id": "onetime", "label": "One time", "labelEs": "Una sola vez", "discount": 0 }
+  ],
+  "addons": [
+    { "id": "deck", "label": "Deck / patio", "labelEs": "Terraza / patio", "price": 130, "minutes": 75 },
+    { "id": "fence", "label": "Fence line", "labelEs": "Línea de la cerca", "price": 110, "minutes": 65 },
+    { "id": "roof", "label": "Roof soft wash", "labelEs": "Lavado suave del techo", "price": 260, "minutes": 140 },
+    { "id": "gutterface", "label": "Gutter face brightening", "labelEs": "Blanqueado de canaletas", "price": 95, "minutes": 50 },
+    { "id": "sealant", "label": "Concrete sealant", "labelEs": "Sellador de concreto", "price": 180, "minutes": 90 }
+  ]
+}

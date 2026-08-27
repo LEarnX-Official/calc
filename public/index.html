@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QuoteCraft — Instant pricing calculators for service businesses</title>
+<meta name="description" content="Let customers price their own job in seconds. Embed an instant quote calculator on your site, and every quote becomes a lead in your CRM."/>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="/assets/theme.css"/>
+<style>
+  /* ── nav ── */
+  .nav { position: sticky; top: 0; z-index: 60; background: rgba(251,248,243,.82); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .nav-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 68px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink-900); letter-spacing: -.02em; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(140deg, var(--violet-600), var(--ink-900)); display: flex; align-items: center; justify-content: center; color: var(--apricot-400); }
+  .brand-mark svg { width: 17px; height: 17px; }
+  .nav-links { display: flex; align-items: center; gap: 26px; }
+  .nav-links a { font-size: 14.5px; font-weight: 500; color: var(--ink-600); }
+  .nav-links a:hover { color: var(--violet-700); }
+  @media (max-width: 780px) { .nav-links .hide-sm { display: none; } }
+
+  /* ── hero ── */
+  .hero { padding: 76px 0 60px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -180px; right: -140px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, var(--apricot-100), transparent 66%); pointer-events: none; }
+  .hero::after { content: ''; position: absolute; bottom: -220px; left: -160px; width: 460px; height: 460px; border-radius: 50%; background: radial-gradient(circle, var(--violet-050), transparent 68%); pointer-events: none; }
+  .hero-in { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; gap: 52px; align-items: center; }
+  @media (max-width: 940px) { .hero-in { grid-template-columns: 1fr; gap: 40px; } }
+  .hero h1 { margin: 18px 0 20px; }
+  .hero .lede { max-width: 500px; margin-bottom: 30px; }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .hero-note { font-size: 13px; color: var(--ink-400); margin-top: 16px; }
+
+  /* fake browser frame for the preview */
+  .shot { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-lg); overflow: hidden; }
+  .shot-bar { display: flex; align-items: center; gap: 7px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--paper-sunk); }
+  .shot-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong); }
+  .shot-url { flex: 1; text-align: center; font-size: 11.5px; color: var(--ink-400); }
+  .shot-body { padding: 22px; }
+  .mini-panel { background: linear-gradient(158deg, var(--violet-700), var(--ink-900)); border-radius: 14px; padding: 20px; color: #fff; position: relative; overflow: hidden; }
+  .mini-panel::before { content: ''; position: absolute; top: -40px; right: -30px; width: 130px; height: 130px; border-radius: 50%; background: radial-gradient(circle, rgba(242,166,90,.28), transparent 68%); }
+  .mini-eyebrow { font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+  .mini-price { font-family: var(--serif); font-size: 40px; line-height: 1.1; margin-top: 6px; }
+  .mini-badge { display: inline-block; background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.16); padding: 4px 11px; border-radius: 999px; font-size: 11px; margin-top: 11px; }
+  .mini-rows { margin-top: 16px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.14); }
+  .mini-row { display: flex; justify-content: space-between; font-size: 11.5px; color: rgba(255,255,255,.78); padding: 3px 0; }
+  .mini-row b { color: #fff; font-weight: 600; }
+  .mini-form { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
+  .mini-field { border: 1.5px solid var(--line-strong); border-radius: 8px; padding: 9px 11px; font-size: 11.5px; color: var(--ink-400); background: var(--paper); }
+  .mini-field.full { grid-column: 1 / -1; }
+
+  /* ── strip ── */
+  .strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--paper-sunk); padding: 22px 0; }
+  .strip-in { display: flex; align-items: center; justify-content: center; gap: 38px; flex-wrap: wrap; }
+  .strip-item { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--ink-600); font-weight: 500; }
+  .strip-item svg { width: 17px; height: 17px; color: var(--sage-600); flex-shrink: 0; }
+
+  /* ── sections ── */
+  section { padding: 80px 0; }
+  .sec-head { text-align: center; max-width: 620px; margin: 0 auto 48px; }
+  .sec-head h2 { margin: 12px 0 14px; }
+  .sec-head p { font-size: 16.5px; color: var(--ink-600); line-height: 1.65; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+  .step { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px 26px; position: relative; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+  .step:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .step-n { font-family: var(--serif); font-size: 13px; font-weight: 700; color: var(--apricot-600); letter-spacing: .1em; }
+  .step h3 { margin: 12px 0 9px; font-size: 19px; }
+  .step p { font-size: 14.5px; color: var(--ink-600); line-height: 1.65; }
+
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 940px) { .feat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 620px) { .feat-grid { grid-template-columns: 1fr; } }
+  .feat { padding: 26px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--paper-raised); }
+  .feat h4 { margin: 14px 0 8px; font-size: 16.5px; }
+  .feat p { font-size: 14px; color: var(--ink-600); line-height: 1.6; }
+
+  /* ── verticals ── */
+  .vert-band { background: var(--ink-900); color: #fff; border-radius: var(--radius-lg); padding: 56px 44px; position: relative; overflow: hidden; }
+  .vert-band::before { content: ''; position: absolute; top: -100px; left: -60px; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(92,79,135,.5), transparent 68%); }
+  .vert-band::after { content: ''; position: absolute; bottom: -130px; right: -70px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(242,166,90,.2), transparent 66%); }
+  .vert-band > * { position: relative; }
+  .vert-band h2 { color: #fff; }
+  .vert-band .lede { color: rgba(255,255,255,.72); }
+  .vert-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .vert-chip { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 9px 18px; font-size: 14px; color: rgba(255,255,255,.9); }
+  .vert-chip.live { background: var(--apricot-500); border-color: var(--apricot-500); color: var(--ink-900); font-weight: 600; }
+
+  /* ── pricing ── */
+  .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 900px) { .price-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; } }
+  .plan { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px 26px; position: relative; }
+  .plan.featured { border: 2px solid var(--ink-900); box-shadow: var(--shadow); }
+  .plan-tag { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--apricot-500); color: var(--ink-900); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 14px; border-radius: 999px; white-space: nowrap; }
+  .plan h3 { font-size: 18px; }
+  .plan .amt { font-family: var(--serif); font-size: 42px; color: var(--ink-900); margin: 14px 0 2px; letter-spacing: -.02em; }
+  .plan .amt small { font-family: var(--sans); font-size: 14px; font-weight: 500; color: var(--ink-400); letter-spacing: 0; }
+  .plan .who { font-size: 13.5px; color: var(--ink-500); min-height: 40px; }
+  .plan ul { list-style: none; margin: 20px 0 24px; }
+  .plan li { display: flex; gap: 10px; font-size: 14px; color: var(--ink-700); padding: 7px 0; line-height: 1.5; }
+  .plan li svg { width: 15px; height: 15px; color: var(--sage-600); flex-shrink: 0; margin-top: 4px; }
+
+  /* ── cta ── */
+  .cta-band { text-align: center; padding: 76px 0; }
+  .cta-band h2 { margin-bottom: 14px; }
+  .cta-band p { font-size: 17px; color: var(--ink-600); max-width: 480px; margin: 0 auto 28px; }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0; }
+  .foot-in { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 13.5px; color: var(--ink-500); }
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="container nav-in">
+  <a href="/" class="brand">
+    <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+    QuoteCraft
+  </a>
+  <div class="nav-links">
+    <a href="#how" class="hide-sm">How it works</a>
+    <a href="#pricing" class="hide-sm">Pricing</a>
+    <a href="/demo" class="hide-sm">Live demo</a>
+    <a href="/login">Sign in</a>
+    <a href="/signup" class="btn btn-primary btn-sm">Start free</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="container hero-in">
+  <div>
+    <span class="eyebrow">For home-service businesses</span>
+    <h1>Let customers <em class="accent">price themselves.</em></h1>
+    <p class="lede">Your visitors want a number, not a callback form. QuoteCraft puts an instant, accurate quote on your website — and turns every one into a lead in your inbox.</p>
+    <div class="hero-cta">
+      <a href="/signup" class="btn btn-primary btn-lg">Build your calculator</a>
+      <a href="/demo" class="btn btn-outline btn-lg">See it live</a>
+    </div>
+    <p class="hero-note">Free while you set it up · No card required · Live in about 10 minutes</p>
+  </div>
+
+  <div class="shot">
+    <div class="shot-bar">
+      <span class="shot-dot"></span><span class="shot-dot"></span><span class="shot-dot"></span>
+      <span class="shot-url">yourcleaningcompany.com/pricing</span>
+    </div>
+    <div class="shot-body">
+      <div class="mini-form">
+        <div class="mini-field">1,800 – 2,199 sq ft</div>
+        <div class="mini-field">3 bedrooms</div>
+        <div class="mini-field">2 bathrooms</div>
+        <div class="mini-field">Every 2 weeks</div>
+        <div class="mini-field full">Deep clean · inside oven</div>
+      </div>
+      <div class="mini-panel">
+        <div class="mini-eyebrow">Your estimate</div>
+        <div class="mini-price">$284</div>
+        <div class="mini-badge">Standard · Every 2 weeks</div>
+        <div class="mini-rows">
+          <div class="mini-row"><span>Weekly</span><b>$268</b></div>
+          <div class="mini-row"><span>Every 2 weeks</span><b>$284</b></div>
+          <div class="mini-row"><span>One time</span><b>$334</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></header>
+
+<div class="strip"><div class="container strip-in">
+  <div class="strip-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Quotes 24/7, even at midnight</div>
+  <div class="strip-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> One line of code to install</div>
+  <div class="strip-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Leads straight to your CRM</div>
+</div></div>
+
+<section id="how"><div class="container">
+  <div class="sec-head">
+    <span class="eyebrow">How it works</span>
+    <h2>Three steps, then it runs itself</h2>
+    <p>You set your prices once. After that, your website quotes every visitor the same way you would — without you touching the phone.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">STEP 01</div>
+      <h3>Set your numbers</h3>
+      <p>Start from a preset built for your trade, then set your hourly rate, minimum charge, recurring discounts and add-ons. Everything is priced off crew time, so the maths always matches how you actually work.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">STEP 02</div>
+      <h3>Paste one line</h3>
+      <p>Drop a single script tag into your site — Wix, Squarespace, WordPress, HighLevel, anything. The calculator loads in its own frame, so nothing about your theme can break it.</p>
+    </div>
+    <div class="step">
+      <div class="step-n">STEP 03</div>
+      <h3>Collect the leads</h3>
+      <p>Every customer who sees a price gets asked for their details. Those land in your dashboard and get pushed to your CRM through Zapier, Make or any webhook.</p>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="container">
+  <div class="sec-head">
+    <span class="eyebrow">Why it converts</span>
+    <h2>A price beats a contact form</h2>
+    <p>People shopping for home services compare three companies. The one that answers first usually wins the job.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="icon-tile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </div>
+      <h4>Answers at 11pm</h4>
+      <p>Most home-service searches happen after hours. Your calculator quotes them then, instead of losing them to whoever replies first tomorrow.</p>
+    </div>
+    <div class="feat">
+      <div class="icon-tile apricot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+      </div>
+      <h4>Filters out tyre-kickers</h4>
+      <p>Someone who sees $340 and still hands over their number is ready to book. You stop spending calls on people who were never going to pay.</p>
+    </div>
+    <div class="feat">
+      <div class="icon-tile sage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      </div>
+      <h4>Consistent every time</h4>
+      <p>No more quoting the same house two different prices depending on who picked up. Your margins are in the config, not in someone's head.</p>
+    </div>
+    <div class="feat">
+      <div class="icon-tile clay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>
+      </div>
+      <h4>Sells the recurring plan</h4>
+      <p>Showing weekly next to one-time makes the discount obvious. Recurring customers are worth several thousand a year — this is where they get created.</p>
+    </div>
+    <div class="feat">
+      <div class="icon-tile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>
+      </div>
+      <h4>Straight into your CRM</h4>
+      <p>Point it at a Zapier, Make or HighLevel webhook and leads arrive wherever you already work. We don't ask you to move house.</p>
+    </div>
+    <div class="feat">
+      <div class="icon-tile apricot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
+      </div>
+      <h4>Looks like your brand</h4>
+      <p>Set your accent colour and wording. It reads as part of your site, not a bolted-on third-party tool.</p>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="container">
+  <div class="vert-band">
+    <span class="eyebrow" style="color:var(--apricot-400)">Not just cleaning</span>
+    <h2 style="margin:12px 0 14px">One engine, any trade</h2>
+    <p class="lede" style="max-width:560px">Everything is priced from crew minutes, so the same engine handles any job that's quoted by size and scope. Three trades ship ready to use — the rest are a config file away.</p>
+    <div class="vert-list">
+      <span class="vert-chip live">Residential cleaning</span>
+      <span class="vert-chip live">Lawn care</span>
+      <span class="vert-chip live">Pressure washing</span>
+      <span class="vert-chip">Window cleaning</span>
+      <span class="vert-chip">Pool service</span>
+      <span class="vert-chip">Junk removal</span>
+      <span class="vert-chip">Painting</span>
+      <span class="vert-chip">Pest control</span>
+      <span class="vert-chip">Carpet cleaning</span>
+    </div>
+  </div>
+</div></section>
+
+<section id="pricing"><div class="container">
+  <div class="sec-head">
+    <span class="eyebrow">Pricing</span>
+    <h2>Costs less than one lost job</h2>
+    <p>A single recurring customer is worth thousands a year. You need one extra booking a month for this to pay for itself several times over.</p>
+  </div>
+  <div class="price-grid">
+    <div class="plan">
+      <h3>Starter</h3>
+      <div class="amt">$39<small>/mo</small></div>
+      <p class="who">One calculator, one location.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> 1 calculator</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Unlimited quotes &amp; leads</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Lead inbox + CSV export</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Email support</li>
+      </ul>
+      <a href="/signup" class="btn btn-outline btn-block">Start free</a>
+    </div>
+    <div class="plan featured">
+      <span class="plan-tag">Most popular</span>
+      <h3>Pro</h3>
+      <div class="amt">$89<small>/mo</small></div>
+      <p class="who">Everything you need to run it as a lead channel.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> 3 calculators</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Webhook &amp; Zapier delivery</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Custom branding &amp; colours</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Remove QuoteCraft badge</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Priority support</li>
+      </ul>
+      <a href="/signup" class="btn btn-primary btn-block">Start free</a>
+    </div>
+    <div class="plan">
+      <h3>Agency</h3>
+      <div class="amt">$249<small>/mo</small></div>
+      <p class="who">For agencies running multiple client sites.</p>
+      <ul>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> 25 calculators</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> All verticals &amp; presets</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> White-label embeds</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Client sub-accounts</li>
+      </ul>
+      <a href="/signup" class="btn btn-outline btn-block">Talk to us</a>
+    </div>
+  </div>
+</div></section>
+
+<div class="cta-band"><div class="container-narrow">
+  <h2>Your next customer is on your site right now</h2>
+  <p>They're deciding whether to fill in your contact form or go back to Google. Give them a number instead.</p>
+  <a href="/signup" class="btn btn-accent btn-lg">Build your calculator — free</a>
+</div></div>
+
+<footer><div class="container foot-in">
+  <div class="row"><span class="brand" style="font-size:16px">
+    <span class="brand-mark" style="width:26px;height:26px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+    QuoteCraft</span></div>
+  <div class="row wrap" style="gap:22px">
+    <a href="/demo">Live demo</a><a href="/login">Sign in</a><a href="/signup">Start free</a>
+  </div>
+</div></footer>
+
+</body>
+</html>

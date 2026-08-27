@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign in — QuoteCraft</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="/assets/theme.css"/>
+<style>
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 24px; position: relative; }
+  /* Decorative blobs sit outside the viewport, so they need their own clipped
+     layer — overflow-x on <body> won't contain them when <html> is the scroller. */
+  .bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .bg::before { content:''; position:absolute; top:-220px; right:-160px; width:560px; height:560px; border-radius:50%; background: radial-gradient(circle, var(--apricot-100), transparent 66%); }
+  .bg::after { content:''; position:absolute; bottom:-240px; left:-180px; width:520px; height:520px; border-radius:50%; background: radial-gradient(circle, var(--violet-050), transparent 68%); }
+
+  .wrap { position: relative; width: 100%; max-width: 396px; }
+  .brand { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--serif); font-size: 21px; font-weight: 700; color: var(--ink-900); letter-spacing: -.02em; margin-bottom: 30px; }
+  .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(140deg, var(--violet-600), var(--ink-900)); display: flex; align-items: center; justify-content: center; color: var(--apricot-400); }
+  .brand-mark svg { width: 18px; height: 18px; }
+
+  .panel { background: var(--paper-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 34px 32px; box-shadow: var(--shadow); }
+  .panel h1 { font-size: 26px; margin-bottom: 6px; }
+  .panel .sub { font-size: 14.5px; color: var(--ink-600); margin-bottom: 26px; }
+
+  .err { background: var(--clay-100); border: 1px solid #EFCFC5; color: var(--clay-600); font-size: 13.5px; padding: 11px 14px; border-radius: var(--radius-xs); margin-bottom: 18px; display: none; line-height: 1.5; }
+  .err.show { display: block; }
+  .alt { text-align: center; font-size: 14px; color: var(--ink-500); margin-top: 22px; }
+
+  .demo-hint { margin-top: 18px; background: var(--violet-050); border: 1px solid var(--violet-100); border-radius: var(--radius-xs); padding: 13px 15px; font-size: 12.5px; color: var(--ink-600); line-height: 1.6; }
+  .demo-hint b { color: var(--ink-900); font-weight: 600; }
+  .demo-hint button { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--violet-600); cursor: pointer; text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+  <a href="/" class="brand">
+    <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg></span>
+    QuoteCraft
+  </a>
+
+  <div class="panel">
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to your calculator and leads.</p>
+
+    <div class="err" id="err"></div>
+
+    <form id="form" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input class="input" id="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email" required/>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input class="input" id="password" type="password" placeholder="Your password" autocomplete="current-password" required/>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" type="submit" id="submit">Sign in</button>
+    </form>
+
+    <div class="demo-hint">
+      Just looking around? Use the demo account —
+      <b>demo@quotecraft.app</b> / <b>demo1234</b>
+      · <button type="button" id="fill">fill it in</button>
+    </div>
+
+    <p class="alt">No account yet? <a href="/signup">Start free</a></p>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+
+$('#fill').onclick = () => {
+  $('#email').value = 'demo@quotecraft.app';
+  $('#password').value = 'demo1234';
+  $('#submit').focus();
+};
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const err = $('#err');
+  err.classList.remove('show');
+
+  const btn = $('#submit');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: $('#email').value.trim(), password: $('#password').value })
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Could not sign you in.');
+    location.href = '/app';
+  } catch (ex) {
+    err.textContent = ex.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Sign in';
+  }
+});
+</script>
+</body>
+</html>

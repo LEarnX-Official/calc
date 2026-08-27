@@ -1,0 +1,73 @@
+{
+  "vertical": "lawn-care",
+  "name": "Lawn Care",
+  "tagline": "Mowing, edging and seasonal yard work",
+  "icon": "leaf",
+  "currency": "USD",
+  "hourlyRate": 70,
+  "priceFactor": 1,
+  "minimumPrice": 55,
+  "roundTo": 1,
+  "crewSize": 2,
+  "defaultCrew": "crew2",
+  "rangeBufferMinutes": 30,
+  "sizeLabel": "Lot size",
+  "sizeLabelEs": "Tamaño del terreno",
+  "crewOptions": [
+    { "id": "crew2", "size": 2, "label": "Team of 2", "labelEs": "Equipo de 2", "blurb": "Our standard crew", "blurbEs": "Nuestro equipo estándar", "multiplier": 1 },
+    { "id": "crew4", "size": 4, "label": "Team of 4", "labelEs": "Equipo de 4", "blurb": "Done in about half the time", "blurbEs": "Listo en casi la mitad del tiempo", "multiplier": 1 },
+    { "id": "crew6", "size": 6, "label": "Team of 6", "labelEs": "Equipo de 6", "blurb": "Big lots finished in one morning", "blurbEs": "Terrenos grandes en una sola mañana", "multiplier": 1 }
+  ],
+  "sizeTiers": [
+    { "id": "l0", "label": "Under 1/8 acre", "labelEs": "Menos de 1/8 de acre", "minutes": 30 },
+    { "id": "l1", "label": "1/8 – 1/4 acre", "labelEs": "1/8 – 1/4 de acre", "minutes": 45 },
+    { "id": "l2", "label": "1/4 – 1/2 acre", "labelEs": "1/4 – 1/2 acre", "minutes": 65 },
+    { "id": "l3", "label": "1/2 – 3/4 acre", "labelEs": "1/2 – 3/4 de acre", "minutes": 90 },
+    { "id": "l4", "label": "3/4 – 1 acre", "labelEs": "3/4 – 1 acre", "minutes": 115 },
+    { "id": "l5", "label": "1 – 2 acres", "labelEs": "1 – 2 acres", "minutes": 165 },
+    { "id": "l6", "label": "Over 2 acres", "labelEs": "Más de 2 acres", "minutes": 0, "custom": true, "customMessage": "Acreage this size depends on terrain and access. Send your details for a same-week site visit.", "customMessageEs": "Un terreno de este tamaño depende del relieve y del acceso. Déjanos tus datos y lo visitamos esta misma semana." }
+  ],
+  "modifiers": [
+    {
+      "id": "trees",
+      "label": "Trees to mow around",
+      "labelEs": "Árboles que rodear",
+      "min": 0, "max": 20, "default": 2,
+      "minutesEach": 3
+    },
+    {
+      "id": "beds",
+      "label": "Garden beds to edge",
+      "labelEs": "Jardineras que perfilar",
+      "min": 0, "max": 12, "default": 2,
+      "minutesEach": 8
+    },
+    {
+      "id": "gates",
+      "label": "Gates / tight access points",
+      "labelEs": "Portones / accesos estrechos",
+      "help": "Narrow gates mean the ride-on stays on the trailer.",
+      "helpEs": "Con portones estrechos, el tractor se queda en el remolque.",
+      "min": 0, "max": 6, "default": 0,
+      "minutesEach": 10
+    }
+  ],
+  "services": [
+    { "id": "mow", "label": "Mow & Go", "labelEs": "Corte Rápido", "blurb": "Cut, trim, blow clean", "blurbEs": "Cortar, orillar y soplar", "multiplier": 1, "icon": "leaf", "allowRecurring": true },
+    { "id": "full", "label": "Full Service", "labelEs": "Servicio Completo", "blurb": "Mow plus beds and edging", "blurbEs": "Corte más jardineras y perfilado", "multiplier": 1.45, "icon": "sparkle", "allowRecurring": true },
+    { "id": "cleanup", "label": "Seasonal Cleanup", "labelEs": "Limpieza de Temporada", "blurb": "Leaves, debris, cut-back", "blurbEs": "Hojas, escombros y poda", "multiplier": 2.1, "icon": "box", "allowRecurring": false }
+  ],
+  "frequencies": [
+    { "id": "weekly", "label": "Weekly", "labelEs": "Cada semana", "discount": 0.18 },
+    { "id": "biweekly", "label": "Every 2 weeks", "labelEs": "Cada 2 semanas", "discount": 0.1 },
+    { "id": "monthly", "label": "Monthly", "labelEs": "Cada mes", "discount": 0.04 },
+    { "id": "onetime", "label": "One time", "labelEs": "Una sola vez", "discount": 0 }
+  ],
+  "addons": [
+    { "id": "hedges", "label": "Hedge trimming", "labelEs": "Poda de setos", "price": 55, "minutes": 45 },
+    { "id": "weeds", "label": "Weed treatment", "labelEs": "Tratamiento de maleza", "price": 40, "minutes": 25 },
+    { "id": "fert", "label": "Fertiliser application", "labelEs": "Aplicación de fertilizante", "price": 65, "minutes": 30 },
+    { "id": "bagging", "label": "Bag & haul clippings", "labelEs": "Embolsar y retirar el corte", "price": 25, "minutes": 20 },
+    { "id": "gutters", "label": "Gutter clear-out", "labelEs": "Limpieza de canaletas", "price": 90, "minutes": 60 }
+  ]
+}

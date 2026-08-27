@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Not found — QuoteCraft</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"/>
+<link rel="stylesheet" href="/assets/theme.css"/>
+<style>
+  body { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 24px; text-align: center; position: relative; }
+  .bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .bg::before { content:''; position:absolute; top:-200px; right:-140px; width:520px; height:520px; border-radius:50%; background: radial-gradient(circle, var(--apricot-100), transparent 66%); }
+  .bg::after { content:''; position:absolute; bottom:-220px; left:-160px; width:480px; height:480px; border-radius:50%; background: radial-gradient(circle, var(--violet-050), transparent 68%); }
+  .wrap { position: relative; max-width: 440px; }
+  .num { font-family: var(--serif); font-size: 88px; line-height: 1; color: var(--violet-600); letter-spacing: -.03em; }
+  h1 { font-size: 28px; margin: 14px 0 12px; }
+  p { font-size: 15.5px; color: var(--ink-600); line-height: 1.7; margin-bottom: 26px; }
+  .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="wrap">
+    <div class="num">404</div>
+    <h1>Nothing to price here</h1>
+    <p>That page doesn't exist — or the calculator you're looking for has been moved or removed. Check the link and try again.</p>
+    <div class="row">
+      <a href="/" class="btn btn-primary">Back to home</a>
+      <a href="/demo" class="btn btn-outline">See the demo</a>
+    </div>
+  </div>
+</body>
+</html>
