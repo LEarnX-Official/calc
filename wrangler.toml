@@ -15,6 +15,13 @@ compatibility_date = "2026-08-27"
 
 pages_build_output_dir = "dist"
 
+# dist/ is generated and gitignored, so a clean CI checkout has no assets
+# directory at all. Wrangler runs this before deploying, which makes the deploy
+# work even if the dashboard's build command is unset. Uses no dependencies —
+# build-static.js imports only Node builtins, so it runs without npm install.
+[build]
+command = "node build-static.js"
+
 [assets]
 directory = "./dist"
 # Serve dist/404.html for unmatched paths. Not "single-page-application" —
