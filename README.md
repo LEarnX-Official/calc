@@ -41,13 +41,64 @@ npm start        # http://localhost:3000
 | `npm run dev` | Same, with `--watch` |
 | `npm run seed` | Create/refresh the demo tenant (idempotent) |
 | `npm test` | Run the pricing-engine test suite |
+| `npm run build` | Build the static `dist/` for Cloudflare Pages |
+| `npm run preview` | Build, then serve `dist/` through Wrangler |
 
 **Demo login:** `demo@quotecraft.app` / `demo1234`
 **Demo widget:** <http://localhost:3000/w/maple-moss-cleaning>
 **Demo embed on a fake site:** <http://localhost:3000/demo>
 
-There is no build step. No bundler, no framework, no transpiler — the browser
-gets the same files that are on disk.
+There is no build step for the server. No bundler, no framework, no
+transpiler — the browser gets the same files that are on disk.
+
+---
+
+## Deploying to Cloudflare Pages
+
+`npm run build` produces a static `dist/` (15 files, ~204 KB) that deploys to
+Pages, well inside its 20,000-file / 25 MiB-per-file limits.
+
+```bash
+npm run build
+npx wrangler pages deploy dist
+```
+
+**The backend does not go with it.** Cloudflare Workers cannot run this server
+at any bundle size — the blockers are categorical, not size-related:
+
+| Code | Why it can't run on Workers |
+|---|---|
+| `server/db.js` — `better-sqlite3` | Native C++ addon; no V8 isolate support |
+| `server/index.js` — `express` | Needs Node's `http` server and `net` sockets |
+| `server/index.js:33` — `fs.readdirSync` | No filesystem at runtime |
+| `server/index.js:445+` — `express.static` | Same |
+
+(The 3 MB gzipped Worker limit is a red herring here: `node_modules` is 81 MB,
+but even a perfectly tree-shaken bundle would still fail on the above.)
+
+So the static build keeps the calculator and drops the SaaS:
+
+| Works | Gone |
+|---|---|
+| Pricing engine, all 3 verticals | Tenant accounts, signup, login |
+| Widget + iframe embed, auto-height | Lead capture and storage |
+| English/Spanish, recurring discounts | Dashboard, CSV export, stats |
+| Standalone calculator at `/calculator/` | CRM webhooks |
+
+`shared/engine.js` is already UMD, so the browser prices jobs with no server
+and no network round-trip — `build-static.js` bakes the vertical configs into
+`config.js` in place of `GET /api/public/config/:slug`.
+
+Backend-only routes (`/login`, `/signup`, `/app`, `/api/*`) redirect to a page
+that says so, rather than serving forms that silently fail. The lead form still
+renders, but tells the visitor plainly that nothing was transmitted — it does
+not fake a submission.
+
+Nothing in the source tree is modified by the build; every transform is applied
+on the way into `dist/`, so `npm start` keeps running the real server.
+
+To deploy the full product instead, use a Node host (Fly.io, Render, Railway)
+with a persistent volume for `data/quotecraft.db`.
 
 ---
 

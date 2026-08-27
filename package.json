@@ -9,7 +9,9 @@
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "seed": "node server/seed.js",
-    "test": "node test/engine.test.js"
+    "test": "node test/engine.test.js",
+    "build": "node build-static.js",
+    "preview": "node build-static.js && npx wrangler pages dev dist"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
